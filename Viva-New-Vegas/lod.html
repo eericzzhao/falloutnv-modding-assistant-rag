@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="icon" href="img/Coco/Head Logo.webp">
+
+    <title>LOD Guide | Viva New Vegas</title>
+
+    <meta name="keywords" content="
+    Mod, Modding, Mods, Guide, Mod Guide, Modding Guide, Resource, Resources,
+    Stable, Stability, Performance, Fix, Fixes, FPS,
+    Fast, Easy, Beginner,
+    Nexus, Nexus Mods, NexusMods,
+    Wabbajack, WJ, Installer,
+    Mod Manager, Mod Organizer, MO2,
+    Fallout, The Elder Scrolls, Bethesda, Bethesda Game Studios, BGS,
+    Fallout New Vegas, Fallout NV, New Vegas, FNV,
+    Fallout 4, FO4,
+    Tale of Two Wastelands, TTW,
+    Skyrim Special Edition, Skyrim SE, SSE,
+    Level Of Detail, LOD, xLODGen, DynDOLOD, TexGen, Terrain LOD, Object LOD, Tree LOD">
+
+    <meta name="description" content="General information on LOD and how to regenerate it with FNVLODgen.">
+    <meta http-equiv='content-language' content='en-us'>
+    <meta name="twitter:card" value="summary_large_image">
+    <meta property="og:site_name" content="ModdingLinked">
+    <meta property="og:title" content="Viva New Vegas">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://vivanewvegas.moddinglinked.com">
+    <meta property="og:image" content="https://vivanewvegas.moddinglinked.com/img/Others/Card.webp">
+    <meta property="og:description" content="General information on LOD and how to regenerate it with FNVLODgen.">
+
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#333230">
+    <meta name="darkreader-lock">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv='expires' content='0'>
+    <meta http-equiv='pragma' content='no-cache'>
+    <meta http-equiv='clear-site-data' content='cache'>
+
+    <script src="js/imageViewer.js"></script>
+    <script src="js/popup.js"></script>
+    <script src="js/javascript.js"></script>
+    <script src="js/responsiveTitle.js"></script>
+    <script src="js/imageSlider.js"></script>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/navigationArrows.css">
+    <link rel="stylesheet" href="css/progressBar.css">
+    <link rel="stylesheet" href="css/guideColors.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/popup.css">
+    <link rel="stylesheet" href="css/images.css">
+    <link rel="stylesheet" href="css/coco.css">
+    <link rel="stylesheet" href="css/textIcons.css">
+    <link rel="stylesheet" href="css/imageSlider.css">
+</head>
+
+<body class="theme">
+    <div class="progress-container">
+        <div class="progress-bar"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="headerMenu" onclick="toggleNav()">
+                <img src="./img/UI/Navigation.svg" id="navButton">
+            </div>
+            <div class="headerTitle">
+                <img src="./img/Coco/Head Logo.webp" alt="Logo" id="logo">
+                <a href="./index.html" id="headerTitle">Viva New Vegas</a>
+            </div>
+            <div class="guideLinks" id="headerLinks">
+                <a href="https://thebestoftimes.moddinglinked.com" target="_blank" rel="nofollow">Tale of Two Wastelands</a>
+                <a href="https://themidnightride.moddinglinked.com" target="_blank" rel="nofollow">Fallout 4</a>
+                <a href="https://dragonbornsfate.moddinglinked.com" target="_blank" rel="nofollow">Skyrim SE</a>
+            </div>
+        </div>
+        <div class="sidebar left-sidebar">
+            <p class="pageLinks">
+                <a href="./index.html" title="Home">
+                    Home
+                </a>
+
+                <a href="./intro.html" title="Introduction">
+                    Introduction
+                </a>
+
+                <a href="./setup.html" title="Setup">
+                    Setup
+                </a>
+
+                <a href="./mo2.html" title="MO2">
+                    Mod Organizer 2
+                </a>
+
+                <a href="./utilities.html" title="Utilities">
+                    Utilities
+                </a>
+
+                <a href="./bugfix.html" title="Bug Fixes">
+                    Bug Fixes
+                </a>
+
+                <a href="./basefinish.html" title="Base Finish">
+                    Base Finish
+                </a>
+            </p>
+            <hr>
+            <p class="pageLinks">
+                <a href="./hud.html" title="User Interface">
+                    User Interface
+                </a>
+                <a href="./content.html" title="Content">
+                    Content
+                </a>
+                <a href="./gameplay.html" title="Gameplay">
+                    Gameplay
+                </a>
+                <a href="./visuals.html" title="Visuals">
+                    Visuals
+                </a>
+                <a href="./finish.html" title="Extended Finish">
+                    Extended Finish
+                </a>
+            </p>
+            <hr>
+            <p>
+                <a href="./changelog.html" title="Changelog">
+                    Changelog
+                </a>
+
+                <a href="./resources.html" title="Resources">
+                    Resources
+                </a>
+
+                <a href="./lod.html" title="LOD Guide" class="sublink">
+                    LOD Guide
+                </a>
+
+                <a href="./decompress.html" title="Decompression Guide" class="sublink">
+                    Decompression Guide
+                </a>
+
+                <a href="./faq.html" title="FAQ">
+                    FAQ
+                </a>
+
+                <a href="./safe-modding.html" title="Safe Modding">
+                    Safe Modding
+                </a>
+
+                <a href="./wabbajack.html" title="Wabbajack">
+                    Wabbajack
+                </a>
+            </p>
+            <p class="sidebar-padder"></p>
+            <hr>
+            <p class="sidebar-bottom">
+                <a href="https://discord.gg/S99Ary5eba" title="Discord">
+                    Discord
+                </a>
+                <a title="Donate" class="popup-button" id="donation-button" onclick="openPopup(this, donation)">
+                    Donate
+                </a>
+                <a href="https://github.com/ModdingLinked/Viva-New-Vegas" title="GitHub">
+                    GitHub
+                </a>
+            </p>
+        </div>
+
+        <div class="card popup" id="donation">
+            <ul>
+                <li>
+                    <a href="https://www.patreon.com/moddinglinked" target="_blank" rel="nofollow">Patreon</a>
+                </li>
+                <li>
+                    <a href="https://www.paypal.me/Ungeziefi" target="_blank" rel="nofollow">PayPal</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="content">
+
+            <span id="Overview" class="section">
+                <h2 onclick="location.href='#Overview'">Overview</h2>
+
+                <div class="card" id="UnderstandingLOD" title="Understanding LOD">
+                    <h3>Understanding LOD</h3>
+                    <p>
+                        LOD stands for <strong>Level Of Detail</strong> - a system used to represent distant objects with simplified meshes and textures to improve performance. In Bethesda games, LOD primarily refers to <strong>Cell LOD</strong>, which represents whole "chunks" of land in the distance.
+                        <br>
+                        <br>
+                        Cell LOD is not based on distance - it's a binary state of whether cell is either loaded or not. The LOD Block distance settings control the max draw distance of LOD itself, not the point where it begins.
+                        <br>
+                        This means that you will see LOD pop-in at the same distance regardless of the settings.
+
+                    <p>Cell LOD is divided into three main categories:</p>
+                    <ol>
+                        <li>
+                            <strong>Object LOD</strong> - Simplified versions of buildings, rocks, and other static objects. Has only one quality level and generates relatively quickly.
+                        </li>
+                        <li>
+                            <strong>Terrain LOD</strong> - Represents the terrain of cell groups, with multiple quality levels that change based on distance (LOD4 4x4, LOD8 8x8, etc.). Takes the longest to generate due to its complexity.
+                        </li>
+                        <li>
+                            <strong>Tree LOD</strong> - 2D planes representing vegetation. Despite the name, works best for small flora rather than actual trees, which are often handled by Object LOD.
+                        </li>
+                    </ol>
+                    </p>
+                </div>
+
+                <div class="card" id="WhyGenerate" title="Why Generate Custom LOD?">
+                    <h3>Why Generate Custom LOD?</h3>
+                    <p>
+                        The vanilla game's LOD is pre-generated and static, which means it can't reflect changes made by mods to terrain or objects. Custom LOD generation creates meshes that match your modded game, providing:
+
+                    <ul>
+                        <li>Increased visual consistency between nearby and distant objects.</li>
+                        <li>More objects visible in the distance.</li>
+                        <li>LOD textures that match your installed texture mods.</li>
+                        <li>Improved quality over the low-detail vanilla LOD.</li>
+                        <li>Filled gaps where objects previously appeared out of nowhere during cell transitions.</li>
+                    </ul>
+
+                    <div class="card-yellow">
+                        <p>
+                            Viva New Vegas (even with VNV Extended) does not strictly require terrain LOD regeneration, but this guide covers both object and terrain LOD to accommodate custom modlists.
+                            <br><br>
+                            Extra instructions for Tale of Two Wastelands users are included throughout.
+                        </p>
+                    </div>
+
+                    <div class="card-green">
+                        <p>
+                            While custom LOD significantly improves visual quality, it does come with a minor performance cost. The trade-off is generally worth it for most modern systems.
+                        </p>
+                    </div>
+                    </p>
+                </div>
+
+                <div class="card" id="LODComparison" title="LOD Comparison">
+                    <h3>LOD Comparison</h3>
+                    <p>
+                        Drag the slider handle to compare how the game looks with generated LOD. Use the dropdown to select different comparison sets.<!--  You can also find performance and VRAM usage comparisons <a href="https://moddinglinked.com/benchmarks.html" target="_blank">here</a>. -->
+                    </p>
+
+                    <div class="image-slider" data-image-path="./img/LOD/Comparisons" data-sets="Helios One|Goodsprings Cemetery|Big Empty|Zion Canyon" data-images="Vanilla|Generated LOD">
+                        <select class="comparison-set-select"></select>
+                        <div class="comparison-slider">
+                            <img class="comparison-before" />
+                            <img class="comparison-after" />
+                            <div class="comparison-handle"></div>
+                        </div>
+                        <div class="comparison-labels">
+                            <span class="label-before"></span>
+                            <span class="label-after"></span>
+                        </div>
+                    </div>
+                </div>
+
+            </span>
+
+            <span id="Preparation" class="section">
+                <h2 onclick="location.href='#Preparation'">Preparation</h2>
+
+                <div class="card">
+                    <h3>Creating a Separator in MO2</h3>
+                    <p>
+                    <ol>
+                        <li>Right-click the empty space in the left pane of MO2 and select <strong>Create separator</strong>.</li>
+                        <li>Name the separator <strong>LOD</strong>.</li>
+                    </ol>
+                    </p>
+                </div>
+
+                <div class="card" id="INITweaks" title="INI Tweaks">
+                    <h3>INI Tweaks</h3>
+                    <p>
+                        These settings will increase the LOD draw distance and remove the jarring transitions of SpeedTree flora.
+                    <ol>
+                        <li>Click the <img class="mo2-icon" src="./img/MO2/Tools.webp" alt="Tools drop-down"> button at the top of MO2 and select <b>INI Editor</b>.</li>
+                        <li>Select the <b>FalloutCustom.ini</b> tab, which should have the settings copied from the <a href="./mo2.html">Mod Organizer 2</a> page.</li>
+                        <li>Paste in the following at the end of the file:</li>
+                        <textarea readonly="readonly" style="height: 12.5em; width: 95%;" onclick="this.focus();this.select()">
+[TerrainManager]
+; Increases the maximum distance of LOD
+fBlockLoadDistanceLow=30000
+fBlockLoadDistance=130000
+
+[SpeedTree]
+; Makes flora use the highest LOD quality, removing the pop-in (not related to Tree LOD)
+bForceFullLOD=1</textarea>
+                    </ol>
+
+                    <div class="card-red">
+                        <p>
+                            <b>IMPORTANT</b>:
+                            <br>
+                            Increasing LOD distances means that the object LOD will now reach the impostor meshes in Vegas, making them clip into each other!
+                            <br>
+                            <br>
+                            The guide includes <a href="https://www.nexusmods.com/newvegas/mods/91028" target="_blank">Goodies</a> which contains a scripted solution.
+                            <br>
+                            If you want a standalone fix, use <a href="https://www.nexusmods.com/newvegas/mods/83691" target="_blank">Impostors and LOD Flicker Fix</a>.
+                            <br>
+                        </p>
+                    </div>
+
+                    </p>
+                </div>
+
+                <div class="card" id="ResolvingConflicts">
+                    <h3>Resolving Conflicts</h3>
+                    <p>
+
+                    <div class="card-yellow">
+                        <p>
+                            This section is not applicable to <b>Tale of Two Wastelands</b> users!
+                        </p>
+                    </div>
+
+                    Yukichigai Unofficial Patch (YUP) ships with with few LOD assets that will conflict with generated LOD.
+                    <br>
+                    To resolve this, do following:
+                    <ol>
+                        <li>Double-click on <b>Yukichigai Unofficial Patch</b> in the left pane of Mod Organizer 2.</li>
+
+                        <div class="card-green">
+                            <p>
+                                The mod name can slightly differ depending on how you installed it or which name you chose during installation.
+                            </p>
+                        </div>
+
+                        <li>Go to the <strong>Filetree</strong> tab.</li>
+                        <li>
+                            Hide following folders:
+                            <ul>
+                                <li><span class="card-basic">meshes\landscape\lod</span></li>
+                                <li><span class="card-basic">textures\landscape\lod</span></li>
+                            </ul>
+                            To hide an item, right-click on it and select <strong>Hide</strong>.
+                        </li>
+                    </ol>
+                    </p>
+                </div>
+
+                <div class="card" id="InstallingResources" title="Installing LOD Resources">
+                    <h3>Installing LOD Resources</h3>
+                    <p>
+                        Install in the following order:
+                    <ol>
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/84171" target="_blank">LOD Fixes and Improvements - NVSE</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - LOD Fixes and Improvements</li>
+                                <li><b>Main Files</b> - LOD Fixes and Improvements - INI</li>
+                            </ul>
+                            <div class="card-green">
+                                <p>
+                                    If you followed Viva New Vegas, you should have this mod already installed.
+                                </p>
+                            </div>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/58562" target="_blank">FNVLODGen Resources</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - FNVLODGen Resources</li>
+                                <li>Hide <strong>FNVLODGen.esp</strong>.</li>
+
+                                <div class="card-yellow">
+                                    <p>
+                                        How to hide files and folders:
+                                    <ol>
+                                        <li>Open the mod in Mod Organizer 2 by double-clicking it on the left pane.</li>
+                                        <li>Go to the <strong>Filetree</strong> tab.</li>
+                                        <li>Right-click the file or folder you want to hide and click <strong>Hide</strong>.</li>
+                                    </ol>
+                                    </p>
+                                </div>
+
+                            </ul>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/64805" target="_blank">Much Needed LOD</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - Much Needed LOD</li>
+                                <li>
+                                    Hide the following:
+                                    <ul>
+                                        <li><strong>MuchNeededLOD.esp</strong></li>
+                                        <li>The <strong>effects</strong> folder inside <strong>meshes</strong></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/81524" target="_blank">Much Needed LOD fixed rocks color</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - Much Needed LOD fixed rocks color</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/61206" target="_blank">LOD Additions and Improvements</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - LODadditions</li>
+                                <li>Hide <strong>tmzLODadditions.esp</strong>.</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/72099" target="_blank">FNV LOD Supplementation</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - FNV LOD Supplementation</li>
+                                <li><b>Optional Files</b> - Optional Overpasses</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/70155" target="_blank">TCM's LOD Overhaul</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - TCM's LOD Overhaul</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/81751" target="_blank">More LODs Additions and fixes</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - More LODs Additions and fixes</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/83316" target="_blank">Wasted LOD - Cliffs of Mojave</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - Version 1.0</li>
+                                <li>Hide <strong>Wasted Mojave Rock LOD.esp</strong>.</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/81981" target="_blank">Different LOD mods little tweaks and additions</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - Different LOD mods little tweaks and additions</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/84165" target="_blank">LODIFY - Level of detail improvement for your Fallout</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - LODIFY</li>
+                                <li><b>Optional Files</b> - LODIFY FNV Wall_SoGB Editon</li>
+                                <li>Hide <strong>TTWLods.esp</strong> and <strong>LODIFY_FNV.esp</strong> from both files.</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/88979" target="_blank">Decent LOD Kit</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - Decent LOD Kit</li>
+                                <li>Hide <strong>Decent LOD Kit.esp</strong>.</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/90327" target="_blank">TTW Fallout 3 LOD</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - TTW Fallout 3 LOD</li>
+
+                                <div class="card-yellow">
+                                    <p>
+                                        Despite the name, the mod contains LOD for objects occurring in <b>Fallout: New Vegas</b> as well.
+                                        <br>
+                                        If you are <b>NOT</b> using Tale of Two Wastelands, hide <strong>TTW Fallout 3 LOD.esp</strong>.
+                                    </p>
+                                </div>
+
+                            </ul>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/93393" target="_blank">Physically Based LOD</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - Physically Based LOD</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/88902" target="_blank">Nuclear LOD</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - Nuclear Core</li>
+                                <li><b>Main Files</b> - Nuclear Trees - Vanilla</li>
+                                <li>Hide <strong>Nuclear_LOD.esp</strong> and <strong>TreeLOD_Vanilla.esp</strong> from both files.</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/79358" target="_blank">VNV LOD Guide Plugins Merge</a></b>
+                            <ul>
+                                <li><b>Main Files</b> - VNV LOD Guide Plugins Merge</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <b class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/88898" target="_blank">High Priority LOD</a></b>
+                            <ul>
+                                <li>
+                                    <b>Main Files</b> - High Priority Core - with NVMIM
+
+                                    <div class="card-yellow">
+                                        <p>
+                                            If you are a Tale of Two Wastelands user, and/or don't use New Vegas Mesh Improvement Mod, choose <b>High Priority Core - without NVMIM</b>
+                                        </p>
+                                    </div>
+
+                                </li>
+                                <li><b>Main Files</b> - High Priority Trees - Vanilla</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <hr>
+
+                    If you are using <b>Tale of Two Wastelands</b>, also do the following:
+                    <ol>
+                        <li>Disable or uninstall <strong>FNVLODGen Resources</strong>.</li>
+                        <li>Install the following files:
+                            <ul>
+                                <li><a href="https://www.nexusmods.com/newvegas/mods/79734" target="_blank">Wasted LOD - Cliffs of DC</a></li>
+                                <li><a href="https://www.nexusmods.com/newvegas/mods/94042" target="_blank">Sqeps Random TTW LOD Hub - RubbleBlockade LOD Fixed</a></li>
+                                <li><a href="https://www.nexusmods.com/newvegas/mods/88898" target="_blank">High Priority LOD - TTW</a></li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    </p>
+                </div>
+
+                <div class="card" id="LoadOrder">
+                    <h3>Load Order</h3>
+                    <p>
+                        After installing all mods, make sure <b>the end</b> of your load order looks like this:
+                    <ul>
+                        <li>Wasted LOD rocks.esp*</li>
+                        <li>TTW Fallout 3 LOD.esp*</li>
+                        <li>VNV LOD Plugins.esp</li>
+                        <li>HighPriorityLOD.esp</li>
+                        <li>HighPriorityLOD_TTW.esp*</li>
+                        <li>TreeLOD_Vanilla.esp (from High Priority Trees - Vanilla)</li>
+                    </ul>
+                    *Tale of Two Wastelands only
+                    </p>
+                </div>
+
+                <div class="card" id="PreGen" title="Pre-Generated LOD">
+                    <p>
+                    <h3 class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/79358" target="_blank">Pre-Generated LOD</a></h3>
+                    If you use a <strong>VNVE modlist</strong> with no changes to textures or the game world, you can skip manual LOD generation by using these files. The Object LOD file also includes Tree LOD, while the other only contains Terrain LOD to reduce bandwidth required for upload and download.
+                    <br><br>
+                    Simply install <strong>both the Object and Terrain Pre-Generated LOD</strong> as normal mods in MO2 and put them under the resources listed in the previous section (which you still need), then disable following mods in the left pane:
+                    <ul>
+                        <li>High Priority Core</li>
+                        <li>High Priority Trees - Vanilla</li>
+                    </ul>
+                    </p>
+                </div>
+            </span>
+
+            <span id="GeneratingLOD" class="section">
+                <h2 onclick="location.href='#GeneratingLOD'">Generating LOD</h2>
+
+                <div class="card" id="xLODGen" title="xLODGen">
+                    <h3>xLODGen</h3>
+                    <p>
+                        xLODGen is an xEdit-based tool that allows you to generate LOD meshes for your game. Similarly to xEdit, it has a single executable that can be be turned into a game specific version by adding arguments.
+
+                    <div class="card-red">
+                        <p>
+                            <b>WARNING!</b>
+                            <br>
+                            Do not use the <b>FNVLODGen</b> from Nexus! It's heavily out of date and will cause issues with your game - most notably broken Tree LOD!
+                            <br>
+                            <br>
+                            You need <strong>at least version 130</strong> of xLODGen to expect a functional LOD output.
+                        </p>
+                    </div>
+
+                    <ol>
+                        <li>Download the latest <strong>xLODGen</strong> from <a href="https://stepmodifications.org/forum/topic/13451-xlodgen-terrain-lod-beta-94-for-fnv-fo3-fo4-fo4vr-tes5-sse-tes5vr-enderal-enderalse/" target="_blank">here</a>.</li>
+                        <li>Once the download has finished, extract the contents of the archive anywhere outside of the default Windows folders.</li>
+                        <li>In MO2, select the <img src="./img/MO2/Executables.webp" alt="MO2 executables" class="mo2-icon"> button at the top of MO2 to open the executables menu.</li>
+                        <li>Click the <strong style="color:rgb(20, 162, 228)">+</strong> at the top of the window and the select <strong>Add from file...</strong></li>
+                        <li>From the pop-up, navigate to where xLODGen is installed and select <strong>xLODGenx64.exe</strong>.</li>
+                        <li>In the <b>Arguments</b> box in the right pane, enter <span class="card-basic">-FNV -O:"C:\Output"</span></li>
+
+                        <div class="card-red">
+                            <p>
+                                This argument will send the LOD output to a folder called <b class="card-basic">Output</b> on your <b>C</b> drive (the drive Windows is installed on).
+                                <br>
+                                You can change the path if you would prefer the files to be generated elsewhere (do not use a UAC protected folder or the game folder).
+                                <br>
+                                <br>
+                                Make sure that the output folder is empty before generating LOD.
+                            </p>
+                        </div>
+                    </ol>
+                    </p>
+                </div>
+
+                <div class="card" id="LandLOD" title="Terrain LOD">
+                    <h3>Terrain LOD</h3>
+                    <p>
+                        In this step we will generate Terrain LOD. This can be the slowest and most CPU intensive step, but it can add a lot of detail to the terrain in the distance.
+                        <br>
+                        <br>
+                        If you are in a rush or have a slow CPU, it's you can uncheck <strong>Build diffuse</strong> and <strong>Build normal</strong> options - this will skip texture generation, <b>massively</b> speeding up the process.
+
+                    <div class="card-yellow">
+                        <p>
+                            <b>Things to know:</b>
+                            <br>
+                        <ul>
+                            <li>
+                                Terrain LOD is used when generating Object LOD to remove triangles that are underground - that's why you need to generate it first.
+                                <br>
+                                Not following this order can result in Object LOD missing triangles due to mismatched source data.
+                                <br>
+                                <br>
+                                When generating both LOD types at once, LODGen will first generate the Terrain LOD, so there's nothing to worry about.
+                            </li>
+                            <li>
+                                You will need to re-generate Terrain LOD every time you install a new mod that adds or modifies terrain, or if you change terrain textures.
+                            </li>
+                            <li>
+                                If you already generated LOD once and only changed textures since then, you can uncheck the <strong>Build meshes</strong> option,
+                                and only generate textures by checking <strong>Build diffuse</strong> and <strong>Build normal</strong>.
+                            </li>
+                        </ul>
+                        </p>
+                    </div>
+
+                    <b>Generation:</b>
+                    <ol>
+                        <li>Select xLODGen from the executables drop-down in the top right of MO2 and click <b>Run</b>.</li>
+                        <li>Right-click on the <b>worldspaces list</b> and pick <strong>Select All</strong>.</li>
+                        <li>In the right pane, <b>uncheck</b> <strong>Objects LOD</strong> and <strong>Trees LOD</strong>.</li>
+                        <li>In the right pane, check <strong>Terrain LOD</strong>.</li>
+                        <li>
+                            Landscape LOD has 4 quality levels for different distances (with LOD4 being the closest to you, and LOD32 being the farthest).
+                            <div class="card-yellow">
+                                <p>
+                                    All LOD levels are generated at once! You don't have to do anything besides configuring every level!
+                                    <br>
+                                    This is not something that you pick and choose - those are not quality "settings", just how the game works.
+                                </p>
+                            </div>
+                            Copy the settings for each LOD level from images below:
+                            <ul>
+                                <li><b>LOD 4</b>:</li>
+                                <div class="image-container width-60">
+                                    <img class="content-img" src="./img/LOD/Land 4 Settings.webp" alt="Terrain LOD Settings - Level 4">
+                                    <div class="resize-overlay expand"></div>
+                                </div>
+                                <li><b>LOD 8</b>:</li>
+                                <div class="image-container width-60">
+                                    <img class="content-img" src="./img/LOD/Land 8 Settings.webp" alt="Terrain LOD Settings - Level 8">
+                                    <div class="resize-overlay expand"></div>
+                                </div>
+                                <li><b>LOD 16</b>:</li>
+                                <div class="image-container width-60">
+                                    <img class="content-img" src="./img/LOD/Land 16 Settings.webp" alt="Terrain LOD Settings - Level 16">
+                                    <div class="resize-overlay expand"></div>
+                                </div>
+                                <li><b>LOD 32</b>:</li>
+                                <div class="image-container width-60">
+                                    <img class="content-img" src="./img/LOD/Land 32 Settings.webp" alt="Terrain LOD Settings - Level 32">
+                                    <div class="resize-overlay expand"></div>
+                                </div>
+                            </ul>
+                            <div class="expander-top">
+                                <h3>Settings Explanation</h3>
+                                <img class="chevron" style="transform: rotateX(0deg);" src="img/UI/Chevron Down.svg" alt="UI element - Chevron">
+                            </div>
+                            <div class="expander-bottom">
+                                <ul>
+                                    <li><strong>Protect borders</strong>: Prevents ugly terrain drops at the cell borders.</li>
+                                    <li><strong>Size</strong>: 512 on LOD4 and 256 on the next levels will suffice for most cases (especially in a list such as VNV), but high resolutions and retextured terrain may benefit from higher settings. Note that this setting can increase the generation time and file size of the output considerably.</li>
+                                    <li><strong>Bake normal-maps</strong>: Roughens the terrain LOD textures to match the actual terrain's normal map.</li>
+                                    <li><strong>Mipmap</strong>: Mipmapping textures prevents <a href="https://en.wikipedia.org/wiki/Mipmap#/media/File:Mipmap_Aliasing_Comparison.png" target="_blank">pixel crawling artifacts</a> at a minor VRAM and storage utilization cost.</li>
+                                    <li><strong>Quality</strong>: This controls the amount of detail in the LOD's geometry. Lower values have more detail and have a minor performance cost because of the amount of triangles in the mesh.</li>
+                                    <li><strong>Optimize Unseen</strong>: Reduces the amount of triangles of geometry below a configurable height, this is meant to optimize unseen areas underwater. Even though most people recommend a value of 550, it seems to break the terrain in the map of minor worldspaces such as Soul Cairn.</li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>Click <strong>Generate</strong>.</li>
+                        <li>When complete, the log will stop and at the end you will see a message saying "<b>LOD generation done</b>", you can now close xLODGen.</li>
+                    </ol>
+                    <b>Installation:</b>
+                    <ol>
+                        <li>In MO2, click the tiny wrench icon at the top, next to the mod counter, then click <strong>Create empty mod</strong>.</li>
+                        <li>Title the mod <strong>FNVLODGen Output - Terrain</strong>.</li>
+                        <li>Navigate to where the LOD files were generated and select both the <span class="card-basic">textures</span> and <span class="card-basic">meshes</span> folders.</li>
+                        <li>Cut them to the <strong>FNVLODGen Output - Terrain</strong> mod you just created (right-click on the mod and select <b>Open in Explorer)</b>.</li>
+                        <li>Press <strong>F5</strong> while you are on MO2 without any menu open, then make sure the new mod is enabled by ticking its checkbox.</li>
+                    </ol>
+                    </p>
+                </div>
+
+                <div class="card" id="ObjectLOD" title="Object LOD">
+                    <h3>Object LOD</h3>
+                    <p>
+                        In this step we will generate Object and Tree LOD. This is the fastest and easiest setup, and also the most commonly used one.
+                    <div class="card-yellow">
+                        <p>
+                            You will need to re-generate Object LOD every time you install a new mod that adds or modifies objects in the game world, or if you change the texture of an object.
+                        </p>
+                    </div>
+
+                    <b>Generation:</b>
+                    <ol>
+                        <li>Select xLODGen from the executables drop-down in the top right of MO2 and click <b>Run</b>.</li>
+                        <li>Right-click on the <b>worldspaces list</b> and pick <strong>Select All</strong>.</li>
+                        <li>Copy all settings from the image below:</li>
+
+                        <div class="image-container width-60">
+                            <img class="content-img" src="./img/LOD/Main Settings.webp" alt="Main LOD Settings - Objects and Trees">
+                            <div class="resize-overlay expand"></div>
+                        </div>
+
+                        <div class="card-green">
+                            <p>
+                                Ignore locked settings like "<strong>in UV range</strong>" - they can't be edited since they are not applicable to Fallout: New Vegas.
+                            </p>
+                        </div>
+
+                        <div class="expander-top">
+                            <h3>Settings Explanation</h3>
+                            <p>
+                                <img class="chevron" style="transform: rotateX(0deg);" src="img/UI/Chevron Down.svg" alt="UI element - Chevron">
+                            </p>
+                        </div>
+                        <div class="expander-bottom">
+                            <ul>
+                                <li><strong>Atlas size</strong>: The <a href="https://en.wikipedia.org/wiki/Texture_atlas" target="_blank">atlas</a> is what contains all textures for the <b>Object LOD</b> meshes, increasing its size means that you can have more textures on the atlas (from the new resources) and they could also be higher resolution.
+                                    <br>
+                                    Keep in mind that the tool will create this atlas with just the resolution it ends up needing (e.g. if you only need 1024x512 for your atlas, that will be the final resolution of it, what we set is simply the max allowed).
+                                </li>
+                                <li><strong>Max texture size</strong>: Object textures above this resolution will not be allowed on the atlas, we increase this to make sure everything makes it there.</li>
+                            </ul>
+                        </div>
+                        <li>Click <strong>Generate</strong>.</li>
+                        <li>When complete, the log will stop and at the end you will see a message saying "<b>LOD generation done</b>", you can now close xLODGen.</li>
+                    </ol>
+                    <b>Installation:</b>
+                    <ol>
+                        <li>In MO2, click the tiny wrench icon at the top, next to the mod counter, then click <strong>Create empty mod</strong>.</li>
+                        <li>Title the mod <strong>FNVLODGen Output - Objects</strong>.</li>
+                        <li>Navigate to where the LOD files were generated and select both the <span class="card-basic">textures</span> and <span class="card-basic">meshes</span> folders.</li>
+                        <li>Cut them to the <strong>FNVLODGen Output - Objects</strong> mod you just created (right-click on the mod and select <b>Open in Explorer)</b>.</li>
+                        <li>Press <strong>F5</strong> while you are on MO2 without any menu open, then make sure the new mod is enabled by ticking its checkbox.</li>
+                    </ol>
+                    </p>
+                </div>
+
+                <div class="card-red center">
+                    <p>
+                        <b>IMPORTANT:</b>
+                        <br>
+                        After every LOD generation, disable the following mods in the <b>left pane</b>:
+                    <ul>
+                        <li>High Priority Core</li>
+                        <li>High Priority Trees - Vanilla</li>
+                    </ul>
+                    When re-generating LOD again, you will need to re-enable them before running LODGen.
+                    <br>
+                    These plugins don't serve any purpose for the game itself, but they are required for LOD generation to work properly.
+                    <br><br>
+                    <hr><br>
+                    Do not disable the other LOD resources! The game needs them for the LOD to work properly.
+                    <br><br>
+                    Generated LOD must <u>always</u> be loaded last in your modlist!
+                    <br><br>
+                    If it happens to be overwritten by any mod (commonly texture mods such as NMC's Texture Pack), the LOD in-game will be broken.
+                    </p>
+                </div>
+
+                <div class="card" id="PackingLOD" title="Packing LOD">
+                    <h3>Packing LOD</h3>
+                    <p>
+                        This step is not necessary, but will reduce loading time of LOD assets by the game by packing them into optimized archive files (BSAs). This translates to less stuttering when entering new areas.
+                        <br>
+                    <ol>
+                        <li>Download <a href="https://www.nexusmods.com/fallout4/mods/63243" target="_blank">BSArch Pro</a></li>
+                        <li>Once the download has finished, extract the contents of the archive.</li>
+                        <li>Run <b>BSArchPro.exe</b>.</li>
+                        <li>In Mod Organizer 2, right click on your <b>FNVLODGen Output - Objects</b> and select <b>Open in Explorer</b>.</li>
+                        <li>From from newly opened window, drag <span class="card-basic">meshes</span> folder into <b>BSArch Pro</b>.</li>
+                        <li>
+                            You should see a window like this:
+                            <br>
+                            <div class="image-container width-60">
+                                <img class="content-img" src="./img/LOD/BSArchPro-Objects.webp" alt="BSArch Pro containing Object LOD files" />
+                                <div class="resize-overlay expand"></div>
+                            </div>
+                        </li>
+                        <li>Click the <b>Pack</b> button.</li>
+                        <li>
+                            A new window will open, click on <b>...</b>, go to the <b>FNVLODGen Output - Objects</b> folder.
+                        </li>
+                        <li>
+                            After entering the folder in the previous step, paste <span class="card-basic">VNV LOD Plugins - Objects - Meshes.bsa</span> into the <b>File name</b> field. Press <b>Save</b>. If you did everything correctly, you should see a window like this:
+                            <br>
+                            <div class="image-container width-40">
+                                <img class="content-img" src="./img/LOD/BSArchPro-Objects-Save.webp" alt="BSArch Pro's Packing Options window" />
+                                <div class="resize-overlay expand"></div>
+                            </div>
+                        </li>
+                        <li>Click <b>OK</b>.</li>
+                        <li>
+                            Once packaging is done, you should see a window similar to this:
+                            <br>
+                            <div class="image-container width-40">
+                                <img class="content-img" src="./img/LOD/BSArchPro-Objects-Override.webp" alt="BSArch Pro's Packing Complete window" />
+                                <div class="resize-overlay expand"></div>
+                            </div>
+                            <br>
+                            Click <b>Create .override for New Vegas</b> and press <b>OK</b>.
+                        </li>
+                        <li>Back in BSArch Pro's main window, click <b>Clear List</b>.</li>
+                        <li>Repeat steps 5 and 6 for the <span class="card-basic">textures</span> folder. Then, press <kbd>Ctrl</kbd> + <kbd>A</kbd> to select all files, right-click, and click <b>Set Compressed Where Applicable</b>.</li>
+
+                        <div class="card-green">
+                            <p>
+                            <p>
+                                <strong>Only object textures should be compressed</strong>. Object textures are very large (often exceeding 2GB, especially with Tale of Two Wastelands) and are loaded once per worldspace entry, so compression only affects the initial load time.
+                                <br><br>
+                                In contrast, object meshes and landscape data are streamed in and out as you move around the world - compressing these could negatively impact in-game loading performance.
+                            </p>
+                            </p>
+                        </div>
+
+                        <li>Repeat steps 7 to 12, but type <span class="card-basic">Textures</span> instead of <b>Meshes</b> in the archive name.</li>
+                        <li>In the <b>FNVLODGen Output - Objects</b> folder, delete the <span class="card-basic">textures</span> and <span class="card-basic">meshes</span> folders.</li>
+                        <li>If you generated Terrain LOD, repeat the steps from 4 to 15, but with <b>FNVLODGen Output - Terrain</b> and <u>without compressing</u>. Change the archive names accordingly as well.</li>
+                    </ol>
+
+                    <div class="expander-top important clickable">
+                        <h3>BSA Usage Information</h3>
+                        <p>
+                            <img class="chevron" style="transform: rotateX(0deg);" src="img/UI/Chevron Down.svg" alt="UI element - Chevron">
+                        </p>
+                    </div>
+                    <div class="expander-bottom">
+                        <p>
+                            To properly use BSA files, you must <strong>keep the following in mind</strong>:
+                        <ul>
+                            <li>
+                                BSA files are loaded by plugins they share their name with - hence why BSAs created here start with "<b>VNV LOD Plugins</b>".
+                                <br>
+                                This also means that BSAs are loaded in the same order as their plugins.
+                            </li>
+                            <li>BSAs belonging to the same plugin are loaded in an alphanumeric order, same one you will get when sorting by <b>Name</b> in <b>File Explorer</b>.</li>
+                            <li>
+                                Due to <b>Archive Invalidation</b>, loose files will always override files in BSAs.
+                                <br>
+                                <br>
+                                Because of this, you must pay attention to files added by other mods. Watch out for following folders:
+                                <ul>
+                                    <li><span class="card-basic">meshes\landscape\lod</span></li>
+                                    <li><span class="card-basic">textures\landscape\lod</span></li>
+                                </ul>
+                                You can hide them in MO2 to prevent them from being loaded.
+                                <br>
+                                <br>
+                                You can enable <b>Enable archives parsing</b> in <b>Mod Organizer 2 -> Settings -> Workarounds</b> to see which mods are overwriting your BSAs.
+                            </li>
+                            <li>
+                                By default, an archive can't replace files added by other BSAs before it.
+                                <br>
+                                <b>JIP LN</b> adds the <b>override</b> functionality that changes this behavior - that's why "<b>.override</b>" files are needed.
+                            </li>
+                        </ul>
+                        </p>
+                    </div>
+                    </p>
+                </div>
+            </span>
+
+            <div class="navigationArrowContainer">
+                <a href="#" id="previous" rel="prev" class="navigationArrow">
+                    <img class="mirror" src="./img/UI/Arrow.svg" alt="Back Arrow">
+                    <span class="arrowText"></span>
+                </a>
+            </div>
+        </div>
+
+        <div class="sidebar right-sidebar">
+            <p id="sidebarContent">
+            </p>
+        </div>
+    </div>
+
+    <footer>ModdingLinked 2026</footer>
+
+    <div id="image-overlay" class="overlay" hidden>
+        <div class="image-container">
+            <img id="enlarged-image" class="enlarged-image" src="" alt="Enlarged Image">
+            <div class="resize-overlay shrink"></div>
+        </div>
+    </div>
+
+</body>
+
+</html>

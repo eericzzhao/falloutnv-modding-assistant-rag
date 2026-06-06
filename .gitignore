@@ -1,0 +1,13 @@
+# Credentials
+.env
+
+# Virtual Environments
+rag_env/
+vnv_env/
+venv/
+.venv/
+
+# Local Vector Database & Cache
+vnv_chroma_db/
+__pycache__/
+.streamlit/

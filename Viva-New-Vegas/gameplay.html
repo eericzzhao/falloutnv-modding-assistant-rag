@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="icon" href="img/Coco/Head Logo Extended.webp">
+
+    <title>Gameplay | Viva New Vegas</title>
+
+    <meta name="keywords" content="
+    Mod, Modding, Mods, Guide, Mod Guide, Modding Guide, Resource, Resources,
+    Stable, Stability, Performance, Fix, Fixes, FPS,
+    Fast, Easy, Beginner,
+    Nexus, Nexus Mods, NexusMods,
+    Wabbajack, WJ, Installer,
+    Mod Manager, Mod Organizer, MO2,
+    Fallout, The Elder Scrolls, Bethesda, Bethesda Game Studios, BGS,
+    Fallout New Vegas, Fallout NV, New Vegas, FNV,
+    Fallout 4, FO4,
+    Tale of Two Wastelands, TTW,
+    Skyrim Special Edition, Skyrim SE, SSE">
+
+    <meta name="description" content="Simple gameplay changes and additions that make the game feel more balanced and modern.">
+    <meta http-equiv='content-language' content='en-us'>
+    <meta name="twitter:card" value="summary_large_image">
+    <meta property="og:site_name" content="ModdingLinked">
+    <meta property="og:title" content="Viva New Vegas">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://vivanewvegas.moddinglinked.com">
+    <meta property="og:image" content="https://vivanewvegas.moddinglinked.com/img/Others/Card.webp">
+    <meta property="og:description" content="Simple gameplay changes and additions that make the game feel more balanced and modern.">
+
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#333230">
+    <meta name="darkreader-lock">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv='expires' content='0'>
+    <meta http-equiv='pragma' content='no-cache'>
+    <meta http-equiv='clear-site-data' content='cache'>
+
+    <script src="js/popup.js"></script>
+    <script src="js/javascript.js"></script>
+    <script src="js/responsiveTitle.js"></script>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/navigationArrows.css">
+    <link rel="stylesheet" href="css/coco.css">
+    <link rel="stylesheet" href="css/progressBar.css">
+    <link rel="stylesheet" href="css/guideColors.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/popup.css">
+    <link rel="stylesheet" href="css/images.css">
+    <link rel="stylesheet" href="css/textIcons.css">
+</head>
+
+<body class="theme">
+    <div class="progress-container">
+        <div class="progress-bar"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="headerMenu" onclick="toggleNav()">
+                <img src="./img/UI/Navigation.svg" id="navButton">
+            </div>
+            <div class="headerTitle">
+                <img src="./img/Coco/Head Logo Extended.webp" alt="Logo" id="logo">
+                <a href="./index.html" id="headerTitle">Viva New Vegas</a>
+            </div>
+            <div class="guideLinks" id="headerLinks">
+                <a href="https://thebestoftimes.moddinglinked.com" target="_blank" rel="nofollow">Tale of Two Wastelands</a>
+                <a href="https://themidnightride.moddinglinked.com" target="_blank" rel="nofollow">Fallout 4</a>
+                <a href="https://dragonbornsfate.moddinglinked.com" target="_blank" rel="nofollow">Skyrim SE</a>
+            </div>
+        </div>
+
+        <div class="sidebar left-sidebar">
+            <p class="pageLinks">
+                <a href="./index.html" title="Home">
+                    Home
+                </a>
+
+                <a href="./intro.html" title="Introduction">
+                    Introduction
+                </a>
+
+                <a href="./setup.html" title="Setup">
+                    Setup
+                </a>
+
+                <a href="./mo2.html" title="MO2">
+                    Mod Organizer 2
+                </a>
+
+                <a href="./utilities.html" title="Utilities">
+                    Utilities
+                </a>
+
+                <a href="./bugfix.html" title="Bug Fixes">
+                    Bug Fixes
+                </a>
+
+                <a href="./basefinish.html" title="Base Finish">
+                    Base Finish
+                </a>
+            </p>
+            <hr>
+            <p class="pageLinks">
+                <a href="./hud.html" title="User Interface">
+                    User Interface
+                </a>
+                <a href="./content.html" title="Content">
+                    Content
+                </a>
+                <a href="./gameplay.html" title="Gameplay">
+                    Gameplay
+                </a>
+                <a href="./visuals.html" title="Visuals">
+                    Visuals
+                </a>
+                <a href="./finish.html" title="Extended Finish">
+                    Extended Finish
+                </a>
+            </p>
+            <hr>
+            <p>
+                <a href="./changelog.html" title="Changelog">
+                    Changelog
+                </a>
+
+                <a href="./resources.html" title="Resources">
+                    Resources
+                </a>
+
+                <a href="./lod.html" title="LOD Guide" class="sublink">
+                    LOD Guide
+                </a>
+
+                <a href="./decompress.html" title="Decompression Guide" class="sublink">
+                    Decompression Guide
+                </a>
+
+                <a href="./faq.html" title="FAQ">
+                    FAQ
+                </a>
+
+                <a href="./safe-modding.html" title="Safe Modding">
+                    Safe Modding
+                </a>
+
+                <a href="./wabbajack.html" title="Wabbajack">
+                    Wabbajack
+                </a>
+            </p>
+            <p class="sidebar-padder"></p>
+            <hr>
+            <p class="sidebar-bottom">
+                <a href="https://discord.gg/S99Ary5eba" title="Discord">
+                    Discord
+                </a>
+                <a title="Donate" class="popup-button" id="donation-button" onclick="openPopup(this, donation)">
+                    Donate
+                </a>
+                <a href="https://github.com/ModdingLinked/Viva-New-Vegas" title="GitHub">
+                    GitHub
+                </a>
+            </p>
+        </div>
+
+        <div class="card popup" id="donation">
+            <ul>
+                <li>
+                    <a href="https://www.patreon.com/moddinglinked" target="_blank" rel="nofollow">Patreon</a>
+                </li>
+                <li>
+                    <a href="https://www.paypal.me/Ungeziefi" target="_blank" rel="nofollow">PayPal</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="content">
+
+            <span id="Gameplay" class="section">
+                <h2 onclick="location.href='#Gameplay'">Gameplay</h2>
+
+                <div class="card">
+                    <h3>Creating a Separator in MO2</h3>
+                    <p>
+                    <ol>
+                        <li>Right-click the empty space in the left pane of MO2 and select <strong>Create separator</strong>.</li>
+                        <li>Name the separator <strong>Gameplay</strong>.</li>
+                    </ol>
+                    </p>
+                </div>
+
+                <div class="card" id="AguaFria">
+                    <p>
+                    <h3 class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/94767" target="_blank">Agua Fria - JSawyer Redone</a></h3>
+                    A reworked version of the original JSawyer rebalance. Among the large number of (configurable) changes, here are the highlights:
+                    <ul>
+                        <li>Lower starting Health and Carry Weight.</li>
+                        <li>Slower leveling.</li>
+                        <li>Lower level cap.</li>
+                        <li>Rebalanced Hardcore mode.</li>
+                    </ul>
+                    <h3 class="install">Installation instructions</h3>
+                    <ul>
+                        <li><b>Main Files</b> - Agua Fria</li>
+                        <li><b>Main Files</b> - Agua Fria INI</li>
+                    </ul>
+                    </p>
+                </div>
+
+                <div class="card" id="DLCEnhancements" title="DLC Enhancements">
+                    <p>
+                    <h3 class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/73803" target="_blank">Essential DLC Enhancements Merged</a></h3>
+                    A merge of many gameplay improvements for the DLCs, all updated and fixed.
+                    <h3 class="install">Installation instructions</h3>
+                    <ul>
+                        <li><b>Main Files</b> - Essential DLC Enhancements Merged</li>
+                    </ul>
+                    </p>
+                </div>
+
+                <div class="card" id="JAM" title="Just Assorted Mods">
+                    <p>
+                    <h3 class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/66666" target="_blank">JAM - Just Assorted Mods</a></h3>
+                    Adds a highly configurable set of new modern features such as a quick loot menu, dynamic crosshair, sprinting, and more. Settings can be tweaked using the Mod Configuration Menu found in the in-game pause menu.
+                    <h3 class="install">Installation instructions</h3>
+                    <ul>
+                        <li><b>Main Files</b> - Just Assorted Mods</li>
+                        <li><a href="https://www.nexusmods.com/newvegas/mods/79358" target="_blank">Viva New Vegas Resources</a></li>
+                        <ul>
+                            <li><b>Main Files</b> - JAM - VNV Configuration</li>
+                        </ul>
+                        <li><a href="https://www.nexusmods.com/newvegas/mods/83847" target="_blank">JLM Grab Tweak</a></li>
+                        <ul>
+                            <li><b>Main Files</b> - JLM Grab Tweak</li>
+                        </ul>
+                        <li><a href="https://www.nexusmods.com/newvegas/mods/82724" target="_blank">Clean Just Assorted Mods (JAM)</a></li>
+                        <ul>
+                            <li><b>Main Files</b> - Clean Just Assorted Mods</li>
+                        </ul>
+                    </ul>
+
+                    <div class="card-green">
+                        <p>
+                            The Viva New Vegas preset for JAM only uses the following features:
+                        <ul>
+                            <li><b>Dynamic Crosshair</b> - Modern crosshair that resizes in accordance to the weapon's spread.</li>
+                            <li><b>Hit Marker</b> - Crosshair markers signaling if you hit the target.</li>
+                            <li><b>Hit Indicator</b> - Arrows indicating the location of incoming damage.</li>
+                            <li><b>Loot Menu</b> - Fallout 4-style loot menu that opens whenever you look at a container.</li>
+                            <li><b>Weapon Hweel</b> - Quick-Use wheel menu.</li>
+                            <li>Sprinting is disabled by default due to being replaced by Enhanced Movement.</li>
+                        </ul>
+                        </p>
+                    </div>
+
+                    </p>
+                </div>
+
+                <div class="card" id="EnhancedMovement">
+                    <p>
+                    <h3 class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/85459" target="_blank">Enhanced Movement</a></h3>
+                    A configurable movement expansion - featuring movement bug fixes, 1st person diagonal movement, enhanced sprint, enhanced sneak, enhanced leaning, animated prone framework, new animations, and more.
+                    <h3 class="install">Installation instructions</h3>
+                    <ul>
+                        <li><b>Main Files</b> - Enhanced Movement</li>
+                        <li><b>Main Files</b> - Enhanced Movement INI</li>
+                        <ol>
+                            <li>Once the mod has been installed, double-click it in the left pane of MO2.</li>
+                            <li>In the <strong>INI Files</strong> tab, open <span class="card-basic">config/EnhancedMovement.ini</span></li>
+                            <li>
+                                The recommended settings for VNV follow, but you're free to configure this differently:
+                                <ul>
+                                    <li>Set <b>iSprintSpeedBonus</b> to <strong>30</strong>.</li>
+                                    <li>Set <b>fAgilitySpeedBonus</b> to <strong>0.25</strong>.</li>
+                                    <li>Set <b>iCost_AP</b> to <strong>10</strong>.</li>
+                                </ul>
+                            </li>
+                            <li>Save your changes.</li>
+                        </ol>
+                    </ul>
+                    </p>
+                </div>
+
+                <div class="card" id="B42Recoil">
+                    <p>
+                    <h3 class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/90536" target="_blank">B42 Recoil - ESPless</a></h3>
+                    Adds a fully configurable modern recoil implementation.
+                    <h3 class="install">Installation instructions</h3>
+                    <ul>
+                        <li><b>Main Files</b> - B42 Recoil</li>
+                    </ul>
+                    </p>
+                </div>
+
+                <div class="card" id="AmmoMemory">
+                    <p>
+                    <h3 class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/65853" target="_blank">Manual Reload and Ammo Memory</a></h3>
+                    Stop the player automatically reloading when the clip is emptied, and remember ammo types and counts for all player weapons.
+                    <h3 class="install">Installation instructions</h3>
+                    <ul>
+                        <li><b>Main Files</b> - Manual Reload and Ammo Count Memory</li>
+                    </ul>
+
+                    <div class="card-green">
+                        <p>
+                            The Stewie Tweaks - VNV Extended INI only enables the Ammo Memory feature, but you can enable the Manual Reload feature through the in-game Stewie Tweaks menu later on if you want.
+                        </p>
+                    </div>
+
+                    </p>
+                </div>
+
+                <div class="card" id="BetterCaravan">
+                    <p>
+                    <h3 class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/81002" target="_blank">Better Caravan</a></h3>
+                    Significantly improves the usability of the Caravan minigame. Optionally fixes AI bugs to make them a little smarter.
+                    <h3 class="install">Installation instructions</h3>
+                    <ul>
+                        <li><b>Main Files</b> - Better Caravan</li>
+                    </ul>
+                    </p>
+                </div>
+
+                <div class="card" id="CookableGrenades">
+                    <p>
+                    <h3 class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/81678" target="_blank">Cookable Grenades</a></h3>
+                    Holding a grenade before throwing it decreases its fuse.
+                    <h3 class="install">Installation instructions</h3>
+                    <ul>
+                        <li><b>Main Files</b> - lStewieAl - Cookable Grenades</li>
+                    </ul>
+                    </p>
+                </div>
+
+                <div class="card" id="FasterSleepWait" title="Faster Sleep-Wait">
+                    <p>
+                    <h3 class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/66785" target="_blank">Faster Sleep-Wait</a></h3>
+                    Decreases the delay between hours while waiting or sleeping.
+                    <h3 class="install">Installation instructions</h3>
+                    <ul>
+                        <li><b>Main Files</b> - Faster Sleep Wait</li>
+                    </ul>
+                    </p>
+                </div>
+
+                <div class="card" id="SaveManager" title="Auto-Save Manager">
+                    <p>
+                    <h3 class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/67248" target="_blank">Auto-Save Manager</a></h3>
+                    Lightweight mod adding timed autosaves, save slots and incremental/full save hotkeys.
+                    <h3 class="install">Installation instructions</h3>
+                    <ul>
+                        <li><b>Main Files</b> - Save Manager</li>
+                    </ul>
+                    </p>
+                </div>
+
+                <div class="card" id="BadTouch" title="Bad Touch NVSE">
+                    <p>
+                    <h3 class="link-download"><a href="https://www.nexusmods.com/newvegas/mods/83782" target="_blank">Bad Touch NVSE</a></h3>
+                    Makes fire and shock hazards deal damage.
+                    <h3 class="install">Installation instructions</h3>
+                    <ul>
+                        <li><a href="https://www.nexusmods.com/newvegas/mods/83088" target="_blank">KEYWORDS</a></li>
+                        <ul>
+                            <li><b>Main Files</b> - KEYWORDS</li>
+                        </ul>
+                        <li><b>Main Files</b> - Bad Touch NVSE</li>
+                        <li><b>Optional Files</b> - Bad Touch NVSE - Minimalist Preset</li>
+                    </ul>
+                    </p>
+                </div>
+            </span>
+
+            <div class="navigationArrowContainer">
+                <a href="#" id="previous" rel="prev" class="navigationArrow">
+                    <img class="mirror" src="./img/UI/Arrow.svg" alt="Back Arrow">
+                    <span class="arrowText"></span>
+                </a>
+
+                <a href="#" id="next" rel="next" class="navigationArrow">
+                    <span class="arrowText"></span>
+                    <img src="./img/UI/Arrow.svg" alt="Forward Arrow">
+                </a>
+            </div>
+        </div>
+
+        <div class="sidebar right-sidebar">
+            <p id="sidebarContent">
+            </p>
+        </div>
+    </div>
+
+    <footer>ModdingLinked 2026</footer>
+</body>
+
+</html>

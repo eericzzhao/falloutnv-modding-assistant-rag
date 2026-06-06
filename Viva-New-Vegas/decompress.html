@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="icon" href="img/Coco/Head Logo.webp">
+
+    <title>Decompression Guide | Viva New Vegas</title>
+
+    <meta name="keywords" content="
+    Mod, Modding, Mods, Guide, Mod Guide, Modding Guide, Resource, Resources,
+    Stable, Stability, Performance, Fix, Fixes, FPS,
+    Fast, Easy, Beginner,
+    Nexus, Nexus Mods, NexusMods,
+    Wabbajack, WJ, Installer,
+    Mod Manager, Mod Organizer, MO2,
+    Fallout, The Elder Scrolls, Bethesda, Bethesda Game Studios, BGS,
+    Fallout New Vegas, Fallout NV, New Vegas, FNV,
+    Fallout 4, FO4,
+    Tale of Two Wastelands, TTW,
+    Skyrim Special Edition, Skyrim SE, SSE,
+    Decompression, Decompress, Decompressing, Plugin Decompression, Plugin Decompressing">
+
+    <meta name="description" content="Guide on how to decompress all plugins in your load order for better performance and less stuttering.">
+    <meta http-equiv='content-language' content='en-us'>
+    <meta name="twitter:card" value="summary_large_image">
+    <meta property="og:site_name" content="ModdingLinked">
+    <meta property="og:title" content="Viva New Vegas">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://vivanewvegas.moddinglinked.com">
+    <meta property="og:image" content="https://vivanewvegas.moddinglinked.com/img/Others/Card.webp">
+    <meta property="og:description" content="Guide on how to decompress all plugins in your load order for better performance and less stuttering.">
+
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#333230">
+    <meta name="darkreader-lock">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv='expires' content='0'>
+    <meta http-equiv='pragma' content='no-cache'>
+    <meta http-equiv='clear-site-data' content='cache'>
+
+    <script src="js/imageViewer.js"></script>
+    <script src="js/popup.js"></script>
+    <script src="js/javascript.js"></script>
+    <script src="js/responsiveTitle.js"></script>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/navigationArrows.css">
+    <link rel="stylesheet" href="css/progressBar.css">
+    <link rel="stylesheet" href="css/guideColors.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/popup.css">
+    <link rel="stylesheet" href="css/images.css">
+</head>
+
+<body class="theme">
+    <div class="progress-container">
+        <div class="progress-bar"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="headerMenu" onclick="toggleNav()">
+                <img src="./img/UI/Navigation.svg" id="navButton">
+            </div>
+            <div class="headerTitle">
+                <img src="./img/Coco/Head Logo.webp" alt="Logo" id="logo">
+                <a href="./index.html" id="headerTitle">Viva New Vegas</a>
+            </div>
+            <div class="guideLinks" id="headerLinks">
+                <a href="https://thebestoftimes.moddinglinked.com" target="_blank" rel="nofollow">Tale of Two Wastelands</a>
+                <a href="https://themidnightride.moddinglinked.com" target="_blank" rel="nofollow">Fallout 4</a>
+                <a href="https://dragonbornsfate.moddinglinked.com" target="_blank" rel="nofollow">Skyrim SE</a>
+            </div>
+        </div>
+        <div class="sidebar left-sidebar">
+            <p class="pageLinks">
+                <a href="./index.html" title="Home">
+                    Home
+                </a>
+
+                <a href="./intro.html" title="Introduction">
+                    Introduction
+                </a>
+
+                <a href="./setup.html" title="Setup">
+                    Setup
+                </a>
+
+                <a href="./mo2.html" title="MO2">
+                    Mod Organizer 2
+                </a>
+
+                <a href="./utilities.html" title="Utilities">
+                    Utilities
+                </a>
+
+                <a href="./bugfix.html" title="Bug Fixes">
+                    Bug Fixes
+                </a>
+
+                <a href="./basefinish.html" title="Base Finish">
+                    Base Finish
+                </a>
+            </p>
+            <hr>
+            <p class="pageLinks">
+                <a href="./hud.html" title="User Interface">
+                    User Interface
+                </a>
+                <a href="./content.html" title="Content">
+                    Content
+                </a>
+                <a href="./gameplay.html" title="Gameplay">
+                    Gameplay
+                </a>
+                <a href="./visuals.html" title="Visuals">
+                    Visuals
+                </a>
+                <a href="./finish.html" title="Extended Finish">
+                    Extended Finish
+                </a>
+            </p>
+            <hr>
+            <p>
+                <a href="./changelog.html" title="Changelog">
+                    Changelog
+                </a>
+
+                <a href="./resources.html" title="Resources">
+                    Resources
+                </a>
+
+                <a href="./lod.html" title="LOD Guide" class="sublink">
+                    LOD Guide
+                </a>
+
+                <a href="./decompress.html" title="Decompression Guide" class="sublink">
+                    Decompression Guide
+                </a>
+
+                <a href="./faq.html" title="FAQ">
+                    FAQ
+                </a>
+
+                <a href="./safe-modding.html" title="Safe Modding">
+                    Safe Modding
+                </a>
+
+                <a href="./wabbajack.html" title="Wabbajack">
+                    Wabbajack
+                </a>
+            </p>
+            <p class="sidebar-padder"></p>
+            <hr>
+            <p class="sidebar-bottom">
+                <a href="https://discord.gg/S99Ary5eba" title="Discord">
+                    Discord
+                </a>
+                <a title="Donate" class="popup-button" id="donation-button" onclick="openPopup(this, donation)">
+                    Donate
+                </a>
+                <a href="https://github.com/ModdingLinked/Viva-New-Vegas" title="GitHub">
+                    GitHub
+                </a>
+            </p>
+        </div>
+
+        <div class="card popup" id="donation">
+            <ul>
+                <li>
+                    <a href="https://www.patreon.com/moddinglinked" target="_blank" rel="nofollow">Patreon</a>
+                </li>
+                <li>
+                    <a href="https://www.paypal.me/Ungeziefi" target="_blank" rel="nofollow">PayPal</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="content">
+
+            <span id="Decompression" class="section">
+                <h2 onclick="location.href='#Decompression'">Decompression Guide</h2>
+
+                <div class="card" id="Why?">
+                    <h3>Why?</h3>
+                    <p>
+                        The vanilla game uses zLib compression for most things, plugin records included. Unfortunately, <strong>zLib is very slow</strong> and CPU heavy (especially on SSDs), which sadly results in loading stutter, especially when using mods that add lots of NPCs and/or new landscapes.
+                        <br>
+                        <br>
+                        <a href="./utilities.html#fixedEsms">Ultimate Edition ESM Fixes Remastered</a> and <a href="https://thebestoftimes.moddinglinked.com">Tale of Two Wastelands</a> already decompress the game's base plugins for you, so <strong>all that is left to decompress is your mods</strong>. Luckily, you can very easily do this using xEdit and a simple script.
+                    <div class="card-yellow">
+                        <p>
+                            You load order should be decompressed <strong>only once it is complete</strong>, so that everything gets decompressed.
+                        </p>
+                    </div>
+                    </p>
+                </div>
+
+                <div class="card" id="TheProcess">
+                    <p>
+                    <h3 id="process">The Process</h3>
+                    <ol>
+                        <li>If you haven't already, read the <a href="https://moddinglinked.com/xedit.html">xEdit guide</a> to avoid confusion with the next steps.</li>
+                        <li>Download the <a href="https://www.nexusmods.com/newvegas/mods/95058">FNVToolkit - xEdit Script</a>.</li>
+                        <li>Inside the downloaded archive, drag the <b>FNVToolkit.pas</b> file into into xEdit's <b>Edit Scripts</b> folder.</li>
+                        <li>Run xEdit and load <strong>all of your mods</strong>.</li>
+                        <li>Once loaded, select all plugins on the tree-view with CTRL+A, then right-click and <b>Apply Script...</b></li>
+                        <div class="image-container width-40">
+                            <img class="content-img" src="./img/Others/Apply Script.webp" alt="Apply a script to the entire load order">
+                            <div class="resize-overlay expand"></div>
+                        </div>
+                        <li>Type <span class="card-basic">FNVToolkit</span> in the filter and the script will automatically be selected.</li>
+                        <div class="image-container width-40">
+                            <img class="content-img" src="./img/Others/Decompress Script.webp" alt="Select the Decompress Records script">
+                            <div class="resize-overlay expand"></div>
+                        </div>
+                        <li>Uncheck every option except for <b>Decompress Records</b>.</li>
+                        <li>Click <b>OK</b> and wait for it to process everything.</li>
+                        <li><strong>Close xEdit</strong>, if it asks you to save then that means the plugins listed got decompressed.</li>
+                    </ol>
+                    </p>
+                </div>
+
+            </span>
+
+            <div class="navigationArrowContainer">
+                <a href="#" id="previous" rel="prev" class="navigationArrow">
+                    <img class="mirror" src="./img/UI/Arrow.svg" alt="Back Arrow">
+                    <span class="arrowText"></span>
+                </a>
+            </div>
+        </div>
+
+        <div class="sidebar right-sidebar">
+            <p id="sidebarContent">
+            </p>
+        </div>
+    </div>
+
+    <footer>ModdingLinked 2026</footer>
+
+    <div id="image-overlay" class="overlay" hidden>
+        <div class="image-container">
+            <img id="enlarged-image" class="enlarged-image" src="" alt="Enlarged Image">
+            <div class="resize-overlay shrink"></div>
+        </div>
+    </div>
+
+</body>
+
+</html>
