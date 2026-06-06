@@ -1,4 +1,5 @@
 import os 
+import pickle
 from openai import embeddings
 import streamlit as st
 from dotenv import load_dotenv
@@ -8,6 +9,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_classic.chains import create_retrieval_chain
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_community.retrievers import BM25Retriever
+from langchain_classic.retrievers import EnsembleRetriever
 
 # this will load the environment variable from .env automaticlly
 load_dotenv()
@@ -17,9 +20,24 @@ DB_DIR = "./vnv_chroma_db"
 
 @st.cache_resource
 def load_rag_chain():
+    # 1. Hybrid search: setting up the Dense Retriever (Chroma + k-Nearest Neighbors)
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     vector_db = Chroma(persist_directory=DB_DIR, embedding_function=embeddings)
-    retriever = vector_db.as_retriever(search_kwargs={"k": 5})
+    retriever_dense = vector_db.as_retriever(search_kwargs={"k": 5})
+
+    # 2. setup the sparse retriever (BM25)
+    with open(os.path.join(DB_DIR, "chunks.pkl"), "rb") as f:
+        chunks = pickle.load(f)
+
+    retriever_sparse = BM25Retriever.from_documents(chunks)
+    retriever_sparse.k = 5
+
+    # 3. Combine into an Ensemble Retriever - weights tweakble 0.5/0.5 = equal split
+    ensemble_retriever = EnsembleRetriever(
+        retrievers=[retriever_sparse, retriever_dense],
+        weights = [0.5, 0.5]
+    )
+
 
     # LangChain and Gemini will automatically look for the api key
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2)
@@ -38,7 +56,7 @@ def load_rag_chain():
         ("human", "{input}")
     ])
     question_answer_chain = create_stuff_documents_chain(llm, prompt)
-    return create_retrieval_chain(retriever, question_answer_chain)
+    return create_retrieval_chain(ensemble_retriever, question_answer_chain)
 
 # Streamlit UI 
 st.set_page_config(page_title="FNVMA - Fallout: New Vegas Modding Assistant", page_icon="🎲", layout="centered")
@@ -73,7 +91,7 @@ if st.button("[Science 100] Search your knowledge base", type="primary"):
                 # invoking the chain
                 response = rag_chain.invoke({"input": user_question})
 
-                st.markdown("Beep boop beep Assistant Response")
+                st.markdown("Wires beep and machines clang. It says that...")
                 st.write(response["answer"])
 
                 # displaying the actual sourced files + chunks

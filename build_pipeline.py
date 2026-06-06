@@ -1,4 +1,5 @@
 import os
+import pickle
 from bs4 import BeautifulSoup
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -65,6 +66,10 @@ def build_pipeline():
         persist_directory=DB_DIR
     )
 
+    # save the raw chunks into disk so our BM25 retriever can access them in app.py
+    chunks_path = os.path.join(DB_DIR, "chunks.pkl")
+    with open(chunks_path, "wb") as f:
+        pickle.dump(chunks, f)
     print(f"Woohoo pardner! The pipeline is now complete. I've gone ahead and had the Vector DB saved to {DB_DIR}")
 
 if __name__ == "__main__":
