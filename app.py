@@ -12,6 +12,10 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.retrievers import BM25Retriever
 from langchain_classic.retrievers import EnsembleRetriever
 
+from langchain_community.cross_encoders import HuggingFaceCrossEncoder
+from langchain_classic.retrievers.document_compressors import CrossEncoderReranker
+from langchain_classic.retrievers import ContextualCompressionRetriever
+
 # this will load the environment variable from .env automaticlly
 load_dotenv()
 
@@ -30,7 +34,7 @@ def load_rag_chain():
         chunks = pickle.load(f)
 
     retriever_sparse = BM25Retriever.from_documents(chunks)
-    retriever_sparse.k = 5
+    retriever_sparse.k = 15
 
     # 3. Combine into an Ensemble Retriever - weights tweakble 0.5/0.5 = equal split
     ensemble_retriever = EnsembleRetriever(
@@ -38,6 +42,15 @@ def load_rag_chain():
         weights = [0.5, 0.5]
     )
 
+    # setting up the cross-encoder and the contextual compressor
+    # analyze 15 chunks --> return only the best 5
+    cross_encoder_model = HuggingFaceCrossEncoder(model_name="cross-encoder/ms-marco-MiniLM-L-6-v2")
+    compressor = CrossEncoderReranker(model=cross_encoder_model,top_n=5)
+
+    compression_retriever = ContextualCompressionRetriever(
+        base_compressor=compressor,
+        base_retriever=ensemble_retriever
+    )
 
     # LangChain and Gemini will automatically look for the api key
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2)
@@ -56,7 +69,7 @@ def load_rag_chain():
         ("human", "{input}")
     ])
     question_answer_chain = create_stuff_documents_chain(llm, prompt)
-    return create_retrieval_chain(ensemble_retriever, question_answer_chain)
+    return create_retrieval_chain(compression_retriever, question_answer_chain)
 
 # Streamlit UI 
 st.set_page_config(page_title="FNVMA - Fallout: New Vegas Modding Assistant", page_icon="🎲", layout="centered")
@@ -80,7 +93,7 @@ user_question = st.text_input(
     placeholder="e.g., Why should I avoid the New Vegas Stutter Remover?"
 )
 
-if st.button("[Science 100] Search your knowledge base", type="primary"):
+if st.button("[Science 100] Answer my question robot!", type="primary"):
     if not user_question:
         st.warning("Hold your horses! Please enter a question before asking me.")
     elif os.environ.get("GOOGLE_API_KEY") == "YOUR_GEMINI_API_KEY_HERE":
