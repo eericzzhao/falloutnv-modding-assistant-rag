@@ -1,6 +1,5 @@
 import os 
 import pickle
-from openai import embeddings
 import streamlit as st
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
@@ -27,7 +26,7 @@ def load_rag_chain():
     # 1. Hybrid search: setting up the Dense Retriever (Chroma + k-Nearest Neighbors)
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     vector_db = Chroma(persist_directory=DB_DIR, embedding_function=embeddings)
-    retriever_dense = vector_db.as_retriever(search_kwargs={"k": 5})
+    retriever_dense = vector_db.as_retriever(search_kwargs={"k": 15})
 
     # 2. setup the sparse retriever (BM25)
     with open(os.path.join(DB_DIR, "chunks.pkl"), "rb") as f:
