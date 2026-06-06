@@ -5,12 +5,16 @@ from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
+# HyDE (Hypotehetical Document Embeddings): Query transformation
+from langchain_classic.chains import HypotheticalDocumentEmbedder
+from langchain_core.prompts import PromptTemplate
+
 from langchain_classic.chains import create_retrieval_chain
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.retrievers import BM25Retriever
 from langchain_classic.retrievers import EnsembleRetriever
-
+# re-ranking imports
 from langchain_community.cross_encoders import HuggingFaceCrossEncoder
 from langchain_classic.retrievers.document_compressors import CrossEncoderReranker
 from langchain_classic.retrievers import ContextualCompressionRetriever
@@ -23,9 +27,29 @@ DB_DIR = "./vnv_chroma_db"
 
 @st.cache_resource
 def load_rag_chain():
-    # 1. Hybrid search: setting up the Dense Retriever (Chroma + k-Nearest Neighbors)
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-    vector_db = Chroma(persist_directory=DB_DIR, embedding_function=embeddings)
+    # we also set up the embeddings for HyDE first
+    base_embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    llm_for_hyde = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.7)
+    hyde_prompt = PromptTemplate(
+        input_variables=["question"],
+        template=(
+            "You are an expert Fallout: New Vegas modder. "
+            "Please write a detailed paragraph answering the following question. "
+            "Focus on technical details, file paths, and mod names. \n\n"
+            "Question: {question}\n\nAnswer:"
+        )
+    )
+
+    #wrap the base embeddings in the HyDE engine
+    hyde_embeddings = HypotheticalDocumentEmbedder.from_llm(
+        llm=llm_for_hyde,
+        base_embeddings=base_embeddings,
+        custom_prompt=hyde_prompt
+    )
+
+    # 1. Hybrid search w/ HyDE: setting up the Dense Retriever (Chroma + k-Nearest Neighbors)
+
+    vector_db = Chroma(persist_directory=DB_DIR, embedding_function=hyde_embeddings)
     retriever_dense = vector_db.as_retriever(search_kwargs={"k": 15})
 
     # 2. setup the sparse retriever (BM25)
