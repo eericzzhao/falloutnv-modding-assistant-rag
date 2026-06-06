@@ -29,7 +29,7 @@ DB_DIR = "./vnv_chroma_db"
 def load_rag_chain():
     # we also set up the embeddings for HyDE first
     base_embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-    llm_for_hyde = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.7)
+    llm_for_hyde = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.7,max_retries=3)
     hyde_prompt = PromptTemplate(
         input_variables=["question"],
         template=(
@@ -76,7 +76,7 @@ def load_rag_chain():
     )
 
     # LangChain and Gemini will automatically look for the api key
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2, max_retries=3)
 
     system_prompt = (
         "You are an expert Fallout: New Vegas modding assistant. \n"
