@@ -24,6 +24,8 @@ load_dotenv()
 
 DB_DIR = "./vnv_chroma_db"
 
+# Dictionary of known horrible, outdated mods (unformatted bc it doesn't matter what's in here)
+KNOWN_BAD_MODS = {"New Vegas Stutter Remover": ["NVSR.esp", "nvse_stutter_remover.dll"], "Project Nevada": ["Project Nevada - Core.esm", "Project Nevada - Cyberware.esp", "Project Nevada - Equipment.esm"], "Zan AutoPurge": ["Zan_AutoPurge_SmartAgro_NV.esp"], "Unlimited Companions": ["UnlimitedCompanions.esp"], "Solid Project": ["SolidPorject.esm"]}
 
 @st.cache_resource
 def load_rag_chain():
@@ -94,6 +96,28 @@ def load_rag_chain():
     question_answer_chain = create_stuff_documents_chain(llm, prompt)
     return create_retrieval_chain(compression_retriever, question_answer_chain)
 
+def parse_load_order(file_content):
+    plugins = []
+    # Decode the bytes to string and split into lines
+    lines = file_content.decode("utf-8").splitlines()
+    
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("*"):
+            line = line[1:]
+        plugins.append(line)
+        
+    return plugins
+
+def detect_problematic_mods(plugins):
+    detected_mods = []
+    for mod_name, files in KNOWN_BAD_MODS.items():
+        if any(bad_file in plugins for bad_file in files):
+            detected_mods.append(mod_name)
+    return detected_mods
+
 # Streamlit UI 
 st.set_page_config(page_title="FNVMA - Fallout: New Vegas Modding Assistant", page_icon="🎲", layout="centered")
 
@@ -111,32 +135,59 @@ else:
     except Exception as e:
         st.error(f"Yikes! Something went wrong while loading the knowledge base. Please check your `GOOGLE_API_KEY` and make sure it is correct. Error details: {str(e)}")
 
-user_question = st.text_input(
-    "Howdy pardner! How can I help you with your Fallout: New Vegas modding experience?",
-    placeholder="e.g., Why should I avoid the New Vegas Stutter Remover?"
-)
+# Tabbed interface
+tab1, tab2 = st.tabs(["💬 Ask a Question", "📋 Analyze Load Order" ])
+# tab1 q&a
+with tab1:
+    user_question = st.text_input(
+        "Howdy pardner! How can I help you with your Fallout: New Vegas modding experience?",
+        placeholder="e.g., Why should I avoid the New Vegas Stutter Remover?"
+    )
 
-if st.button("[Science 100] Answer my question robot!", type="primary"):
-    if not user_question:
-        st.warning("Hold your horses! Please enter a question before asking me.")
-    elif os.environ.get("GOOGLE_API_KEY") == "YOUR_GEMINI_API_KEY_HERE":
-        st.error("Hold it there pardner! Make sure to that your Google API key has been uploaded to the script or environment variables first!")
-    else:
-        with st.spinner("Patrolling the Mojave almost makes you wish for a nuclear winter..."):
-            try:
-                # invoking the chain
-                response = rag_chain.invoke({"input": user_question})
+    if st.button("[Science 100] Answer my question robot!", type="primary"):
+        if not user_question:
+            st.warning("Hold your horses! Please enter a question before asking me.")
+        elif os.environ.get("GOOGLE_API_KEY") == "YOUR_GEMINI_API_KEY_HERE":
+            st.error("Hold it there pardner! Make sure to that your Google API key has been uploaded to the script or environment variables first!")
+        else:
+            with st.spinner("Patrolling the Mojave almost makes you wish for a nuclear winter..."):
+                try:
+                    # invoking the chain
+                    response = rag_chain.invoke({"input": user_question})
 
-                st.markdown("Wires beep and machines clang. It says that...")
-                st.write(response["answer"])
+                    st.markdown("Wires beep and machines clang. It says that...")
+                    st.write(response["answer"])
 
-                # displaying the actual sourced files + chunks
-                with st.expander("🔍 View Retrieved Context (Developer Mode)"):
-                    for i, doc in enumerate(response["context"]):
-                        source_file = doc.metadata.get("source", "Unknown Source")
-                        st.markdown(f"**Chunk {i+1} - From: `{source_file}`**")
-                        st.caption(doc.page_content)
-                        st.markdown("---")
+                    # displaying the actual sourced files + chunks
+                    with st.expander("🔍 View Retrieved Context (Developer Mode)"):
+                        for i, doc in enumerate(response["context"]):
+                            source_file = doc.metadata.get("source", "Unknown Source")
+                            st.markdown(f"**Chunk {i+1} - From: `{source_file}`**")
+                            st.caption(doc.page_content)
+                            st.markdown("---")
 
-            except Exception as e:
-                st.error(f"An error occured during generation: {e}")
+                except Exception as e:
+                    st.error(f"An error occured during generation: {e}")
+with tab2:
+    st.markdown("### 📋 Automated Load Order Diagnostics")
+    st.write("Upload your `loadorder.txt` or `plugins.txt` (usually found in your MO2 profile folder) to check for outdated or broken mods.")
+    uploaded_file =st.file_uploader("Upload text file", type=["txt"])
+    if uploaded_file is not None:
+        if st.button("Analyze Load Order", type="primary"):
+            with st.spinner("Running deterministic diagnostics..."):
+                file_bytes = uploaded_file.read()
+                user_plugins = parse_load_order(file_bytes)
+                bad_mods_found = detect_problematic_mods(user_plugins)
+                if not bad_mods_found:
+                    st.success("Looking good, pardner! We didn't detec any of the major known broken mods in your load order.")
+                else:
+                    st.error(f" Danger! Detected {len(bad_mods_found)} problematic mod(s) in your load order. Must EXTERMINATE!")
+
+                    # ai portion
+                    for mod in bad_mods_found:
+                        st.markdown(f"### ⚠️ {mod}")
+                        with st.spinner(f"Quering knowledge base for {mod} alternatives..."):
+                            # query the rag chain
+                            query = f"Explain why the mod '{mod}' is broken or outdated, and tell me the modern alternative to use instead."
+                            response = rag_chain.invoke({"input": query})
+                            st.info(response["answer"]) 
