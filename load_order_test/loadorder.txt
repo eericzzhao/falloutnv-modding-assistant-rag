@@ -1,0 +1,31 @@
+# This is a test loadorder.txt file for your Streamlit app!
+# It contains vanilla masters, some good mods, and several known bad mods.
+
+*FalloutNV.esm
+*DeadMoney.esm
+*HonestHearts.esm
+*OldWorldBlues.esm
+*LonesomeRoad.esm
+*GunRunnersArsenal.esm
+*CaravanPack.esm
+*ClassicPack.esm
+*MercenaryPack.esm
+*TribalPack.esm
+
+# -- GOOD MODS --
+*YUP - Base Game + All DLC.esm
+*YUP - NPC Fixes (Base Game + All DLC).esp
+*Unofficial Patch NVSE Plus.esp
+
+# -- DANGER ZONE: BAD MODS FOR TESTING --
+*Project Nevada - Core.esm
+*Project Nevada - Equipment.esm
+*SolidProject.esm
+*UnlimitedCompanions.esp
+*Zan_AutoPurge_SmartAgro_NV.esp
+
+# Testing stripping of MO2 asterisks vs non-asterisks
+NVSR.esp
+nvse_stutter_remover.dll
+
+# End of file
