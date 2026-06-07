@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROBCO FNVMA Terminal</title>
+</head>
+<body class="crt">
+    <div class="terminal-container">
+        <header class="terminal-header">
+            <h1>ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM</h1>
+            <p>COPYRIGHT 2077 ROBCO INDUSTRIES</p>
+            <p>-Server 1- FNV RAG Diagnostic Node</p>
+        </header>
+
+        <main class="terminal-content">
+            <section id="chat-zone">
+                <div id="output-log">
+                    <p class="system-msg">> System initialized. Knowledge base loaded.</p>
+                    <p class="system-msg">> Awaiting user input...</p>
+                </div>
+                <div class="input-line">
+                    <span class="prompt">></span>
+                    <input type="text" id="user-input" placeholder="Query the FNV archives..." autocomplete="off" autofocus>
+                    <button id="send-btn">[ENTER]</button>
+                </div>
+            </section>
+
+            <section id="diagnostic-zone">
+                <div class="drop-zone" id="drop-zone">
+                    <p>> DRAG AND DROP LOARDORDER.TXT HERE</p>
+                    <input type="file" id="file-input" accept=".txt" hidden>
+                </div>
+                <div id="diagnostic-results"></div>
+            </section>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
