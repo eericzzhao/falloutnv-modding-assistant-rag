@@ -32,6 +32,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 const isSelected = selectedMap.has(candidate.text);
                 const contextData = selectedMap.get(candidate.text);
 
+                const safeScore = (contextData && contextData.rerank_score !== undefined)
+                    ? contextData.rerank_score
+                    : 0.0;
                 // scale radius based on the huggingface rerank score
                 const radius = isSelected ? 8 + (contextData.rerank_score * 12) : 5;
 
@@ -154,15 +157,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    sendBTN.addEventListener('click', (e) => {
-        e.preventDefault();
+    const chatForm = document.getElementById('chat-form');
+    chatForm.addEventListener('submit', (e) => {
+        e.preventDefault(); //no page refrsh
         handleQuery();
-    });
-    userInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault(); 
-            handleQuery();
-        }
     });
 
     // drag and drop logic for the loadorder txt files
