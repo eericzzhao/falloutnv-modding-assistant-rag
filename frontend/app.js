@@ -18,10 +18,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function handleQuery() {
-        const query = userInput.ariaValueMax.trim();
+        const query = userInput.value.trim();
         if (!query) return;
         
-        appendMesssage(query, true);
+        appendMessage(query, true);
         userInput.value = '';
         appendMessage("PROCESSING QUERY...", false);
 
@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const data = await response.json();
                 appendMessage(`> DIAGNOSTICS COMPLETE> ISSUES FOUND ${data.issues_detected}`);
                 data.diagnostics.forEach(diag => {
-                    appendMesssage(`> WARNING [${diag.mod_name}]: ${diag.issue_description}`);
+                    appendMessage(`> WARNING [${diag.mod_name}]: ${diag.issue_description}`);
                 });
             } catch (error) {
                 outputLog.removeChild(outputLog.lastChild);
