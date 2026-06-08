@@ -48,9 +48,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    sendBTN.addEventListener('click', handleQuery);
+    sendBTN.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleQuery();
+    });
     userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleQuery();
+        if (e.key === 'Enter') {
+            e.preventDefault(); 
+            handleQuery();
+        }
     });
 
     // drag and drop logic for the loadorder txt files
