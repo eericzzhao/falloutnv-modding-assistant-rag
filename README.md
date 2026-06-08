@@ -46,4 +46,4 @@ Observability and automation are built into the core of FNVMA to prove the effic
 * **Data Science & Telemetry:** SQLite, Pandas, Scikit-learn (OLS Regression)
 
 ---
-*Built to keep the Mojave Wasteland stable.*
+*Patrolling the Mojave almost makes you wish for a nuclear winter.*
