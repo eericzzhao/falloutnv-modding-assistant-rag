@@ -8,13 +8,22 @@ document.addEventListener("DOMContentLoaded", () => {
     // api connecting config
     const API_BASE_URL = "http://127.0.0.1:8000/api/v1";
 
-    function appendMessage(text, isUser = false) {
-        const msgDiv = document.createElement('p');
-        msgDiv.textContent = isUser ? `> ${text}` : text;
-        msgDiv.style.color = isUser ?  `#fff` : 'var(--robco-green)';
+    function appendMessage(text, isUser = false, isMarkdown = false) {
+        const msgDiv = document.createElement('div'); //div handles block elemetns into lists
+        if (isUser) {
+            msgDiv.textContent = `> ${text}`;
+            msgDiv.style.color = `#fff`;
+        } else { 
+            // parse markdown if llm response otherwise print raw text
+            if (isMarkdown) {
+                msgDiv.textContent = marked.parse(text);
+            } else {
+                msgDiv.textContent = text;
+            }
+            msgDiv.style.color = 'var(--robco-green)';
+        }
         outputLog.appendChild(msgDiv);
-        // auto-scroll
-        outputLog.scrollTop = outputLog.scrollHeight; 
+        outputLog.scrollTop = outputLog.scrollHeight;
     }
 
     async function handleQuery() {
@@ -147,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // removes the "processing..."" text
             outputLog.removeChild(outputLog.lastChild);
 
-            appendMessage(`> DATA RETRIEVED: ${data.answer}`);
+            appendMessage(data.answer, false, true);
 
             renderRAGGraph(data)
             console.log("Telemetry Payload for D3.js:", data);
