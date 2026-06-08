@@ -1,6 +1,8 @@
 # the RAG pipeline logic 
 import os
 import pickle
+import sqlite3
+import time
 from typing import Dict, List, Any
 from dotenv import load_dotenv
  
@@ -17,12 +19,36 @@ from langchain_classic.retrievers.document_compressors import CrossEncoderRerank
 load_dotenv()
 
 DB_DIR = "./vnv_chroma_db"
+TELEMETRY_DB_PATH = "telemetry.db"
 
 # Dictionary of known horrible, outdated mods (unformatted bc it doesn't matter what's in here)
 KNOWN_BAD_MODS = {"New Vegas Stutter Remover": ["NVSR.esp", "nvse_stutter_remover.dll"], "Project Nevada": ["Project Nevada - Core.esm", "Project Nevada - Cyberware.esp", "Project Nevada - Equipment.esm"], "Zan AutoPurge": ["Zan_AutoPurge_SmartAgro_NV.esp"], "Unlimited Companions": ["UnlimitedCompanions.esp"], "Solid Project": ["SolidPorject.esm"]}
 
+def init_telemetry_db():
+    with sqlite3.connect(TELEMETRY_DB_PATH) as conn:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS query_logs (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        query TEXT,
+                        pool_size INTEGER,
+                        context_size INTEGER,
+                        avg_rerank_score REAL,
+                        latency_ms REAL
+                        )
+        """)
+
+def log_telemetry(query: str, pool_size: int, context_size: int, avg_score:float, latency: float):
+    with sqlite3.connect(TELEMETRY_DB_PATH) as conn:
+        conn.execute(
+            "INSERT INTO query_logs (query, pool_size, context_size, avg_rerank_score, latency_ms) VALUES (?, ?, ?, ?, ?)",
+            (query, pool_size, context_size, avg_score, latency)
+        )
+
 class FalloutRAGEngine:
     def __init__(self):
+        init_telemetry_db()
+        
         # 1. Embeddings & Vector DB
         self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
         self.vector_db = Chroma(persist_directory=DB_DIR, embedding_function=self.embeddings)
@@ -53,6 +79,8 @@ class FalloutRAGEngine:
 
     def run_query(self, query: str) -> Dict[str, Any]:
         """Runs the query through the pipeline, exposing telemetry for D3.js"""
+        start_time = time.time()
+
         # Step A: Get base candidates from Hybrid Retrieval
         initial_docs = self.ensemble_retriever.invoke(query)
         
@@ -82,6 +110,12 @@ class FalloutRAGEngine:
         prompt = f"Context:\n{context_str}\n\nQuestion: {query}\n\nAnswer:"
         
         response = self.llm.invoke(prompt)
+
+        latency_ms = (time.time() - start_time) * 1000
+        avg_score = sum(c["rerank_score"] for c in final_context_chunks) / len(final_context_chunks) if final_context_chunks else 0.0
+
+        # log to SQLite
+        log_telemetry(query, len(candidate_pool), len(final_context_chunks), avg_score, latency_ms)
 
         return {
             "answer": response.content,
