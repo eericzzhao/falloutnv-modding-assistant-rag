@@ -54,14 +54,14 @@ async def query_rag_pipeline(request: QueryRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Pipeline processing error: {str(e)}")
     
-@app.post("/api/v1/analyze-load-rder")
+@app.post("/api/v1/analyze-load-order")
 async def analyze_load_order_file(file: UploadFile = File(...)):
     engine: FalloutRAGEngine = server_state.get("rag_engine")
     if not engine:
         raise HTTPException(status_code=503, detail="RAG Engine service is uninitialized.")
     
     if not file.filename.endswith(".txt"):
-        raise HTTPException(status_code=400, detaul="Invalid format. Please supply a standard text configuration file.")
+        raise HTTPException(status_code=400, detail="Invalid format. Please supply a standard text configuration file.")
     
     try:
         content = await file.read()
@@ -78,12 +78,12 @@ async def analyze_load_order_file(file: UploadFile = File(...)):
                 "issue_description": rag_result["answer"]
             })
 
-            return {
-                "status": "success",
-                "plugins_parsed": len(user_plugins), 
-                "issues_detected": len(bad_mods_found),
-                "diagnostics": diagnostics
-            }
+        return {
+            "status": "success",
+            "plugins_parsed": len(user_plugins), 
+            "issues_detected": len(bad_mods_found),
+            "diagnostics": diagnostics
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to extract data payload: {str(e)}")
     
