@@ -1,6 +1,6 @@
 // for connecting the frontend to the fastapi engine
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const userInput = document.getElementById('user-input');
     const sendBTN = document.getElementById('send-btn');
     const outputLog = document.getElementById('output-log');
@@ -8,24 +8,68 @@ document.addEventListener("DOMContentLoaded", () => {
     // api connecting config
     const API_BASE_URL = "http://127.0.0.1:8000/api/v1";
 
-    function appendMessage(text, isUser = false, isMarkdown = false) {
+    // dom-aware typewriter/terminal effect
+    async function typewriterHTML(targetElement, htmlString, speed = 15) {
+        //create a hidden temp container to parse the HTML
+        const tempDiv = document.createElement('div')
+        tempDiv.innerHTML = htmlString;
+        targetElement.innerHTML = '';
+
+        // recursive func to handle elements instantly but delay text
+        async function processNode(node, parent) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const text = node.textContent;
+                for (let i = 0; i < text.length; i++){
+                    parent.appendChild(document.createTextNode(text[i]));
+                    //keeps the terminal autoscrolling as the text populates
+                    outputLog.scrollTop = outputLog.scrollHeight;
+                    // delay next chracater
+                    await new Promise(r => setTimeout(r, speed));
+                }
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                // clone the HTML tag instnatly but empty
+                const clone = node.cloneNode(false);
+                parent.appendChild(clone);
+                // recusrively type the text inside the tag
+                for (const child of node.childNodes) {
+                    await processNode(child, clone);
+                }
+            }
+        }
+
+        // start the typing cool thingy
+        for (const child of tempDiv.childNodes) {
+            await processNode(child, targetElement);
+        }
+    }
+
+    async function appendMessage(text, isUser = false, isMarkdown = false, animate = false) {
         const msgDiv = document.createElement('div'); //div handles block elemetns into lists
         if (isUser) {
             msgDiv.textContent = `> ${text}`;
             msgDiv.style.color = `#fff`;
+            outputLog.appendChild(msgDiv);
         } else { 
-            // parse markdown if llm response otherwise print raw text
-            if (isMarkdown) {
-                //msgDiv.textContent = marked.parse(text);
-                msgDiv.innerHTML = marked.parse(text);
-            } else {
-                msgDiv.textContent = text;
-            }
             msgDiv.style.color = 'var(--robco-green)';
+            outputLog.appendChild(msgDiv); // append empty div to screen first
+
+            if (animate) {
+                // parse markdown THEn type it out
+                const htmlContent = isMarkdown ? marked.parse(text) : text;
+                await typewriterHTML(msgDiv, htmlContent, 18); //10 ms delay
+            } else {
+                // instantly print (loading messages)
+                if (isMarkdown) {
+                    msgDiv.innerHTML = marked.parse(text);
+                } else {
+                    msgDiv.textContent = text;
+                }
+            }
         }
-        outputLog.appendChild(msgDiv);
         outputLog.scrollTop = outputLog.scrollHeight;
     }
+    await appendMessage("System initialized. Knowledge base loaded.", false, false, true);
+    await appendMessage("Awaitng user input...", false, false, true); 
 
     async function handleQuery() {
         function renderRAGGraph(payload) {
@@ -157,10 +201,12 @@ document.addEventListener("DOMContentLoaded", () => {
             // removes the "processing..."" text
             outputLog.removeChild(outputLog.lastChild);
 
-            appendMessage(data.answer, false, true);
+            // print the header immediately
+            appendMessage(`> DATA RETRIEVED:`, false, false, true);
 
+            await appendMessage(data.answer, false, true, true);
             renderRAGGraph(data)
-            console.log("Telemetry Payload for D3.js:", data);
+
         } catch (error) {
             outputLog.removeChild(outputLog.lastChild);
             appendMessage(`> ERROR: CONNECTION TO SERVER FAILED ${error.message}`);
