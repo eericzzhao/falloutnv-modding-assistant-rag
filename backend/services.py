@@ -93,20 +93,23 @@ class FalloutRAGEngine:
             })
 
         # Step B: Pass candidates through the Cross-Encoder compressor
-        compressed_docs = self.reranker.compress_documents(initial_docs, query)
-        
-        final_context_chunks = []
-        for doc in compressed_docs:
+        query_doc_pairs = [[query, doc.page_content] for doc in initial_docs]
+
+        raw_scores = self.cross_encoder_model.score(query_doc_pairs)
+        scored_docs = []
+        for doc,score in zip(initial_docs, raw_scores):
             # Safely capture the score added by the reranker middleware
-            score = getattr(doc, "state", {}).get("relevance_score", 0.0)
-            final_context_chunks.append({
+            source = doc.metadata.get("source", "unknown") if doc.metadata else "unknown"
+            scored_docs.append({
                 "text": doc.page_content,
-                "source_file": doc.metadata.get("source", "unknown"),
+                "source_file": source,
                 "rerank_score": float(score)
             })
+        scored_docs.sort(key=lambda x: x["rerank_score"], reverse=True)
+        final_context_chunks = scored_docs[:5]
 
         # Step C: Synthesize final output context block
-        context_str = "\n\n".join([d.page_content for d in compressed_docs])
+        context_str = "\n\n".join([d["text"] for d in final_context_chunks])
         prompt = f"Context:\n{context_str}\n\nQuestion: {query}\n\nAnswer:"
         
         response = self.llm.invoke(prompt)
