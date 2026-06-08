@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from contextlib import asynccontextmanager
 from typing import List, Dict, Any
 
-from services import FalloutRAGEngine, parse_load_order, detect_problematic_mods
+from backend.services import FalloutRAGEngine, parse_load_order, detect_problematic_mods
 
 #dictionary object to main cross-route global server
 server_state = {}
