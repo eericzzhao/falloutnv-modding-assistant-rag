@@ -48,7 +48,7 @@ def log_telemetry(query: str, pool_size: int, context_size: int, avg_score:float
 class FalloutRAGEngine:
     def __init__(self):
         init_telemetry_db()
-        
+
         # 1. Embeddings & Vector DB
         self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
         self.vector_db = Chroma(persist_directory=DB_DIR, embedding_function=self.embeddings)
@@ -88,7 +88,7 @@ class FalloutRAGEngine:
         candidate_pool = []
         for doc in initial_docs:
             candidate_pool.append({
-                "text": doc.page_content[:120] + "...",
+                "text": doc.page_content,
                 "source_file": doc.metadata.get("source", "unknown")
             })
 

@@ -112,8 +112,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({ question: query})
             });
             
-            if (!response.ok) throw new Error("Newwork response was not ok");
-
+            if (!response.ok) {
+                const errorData = await response.json();
+                // forces a print of the bug
+                throw new Error(errorData.detail || `HTTP Error ${response.status}`);
+            }
             const data = await response.json();
             // removes the "processing..."" text
             outputLog.removeChild(outputLog.lastChild);
@@ -132,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         handleQuery();
     });
-    userInput.addEventListener('keypress', (e) => {
+    userInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault(); 
             handleQuery();
