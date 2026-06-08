@@ -26,17 +26,27 @@ document.addEventListener("DOMContentLoaded", () => {
             const height = document.getElementById("d3-container").clientHeight;
 
             // 1.Data Prep: mapping candidates to nodes
-            const selectedTexts = new Set(payload.selected_context.map(c => c.text));
+            const selectedMap = new Map(payload.selected_context.map(c => [c.text, c]));
 
-            const nodes = payload.candidates.map(candidate => ({
-                id: candidate.text,
-                isSelected: selectedTexts.has(candidate.text),
-                radius: selectedTexts.has(candidate.text) ? 12 : 5,
-                color: selectedTexts.has(candidate.text) ? "var(--robco-green)" : "#1a401a"
-            }));
+            const nodes = payload.candidates.map(candidate => {
+                const isSelected = selectedMap.has(candidate.text);
+                const contextData = selectedMap.get(candidate.text);
+
+                // scale radius based on the huggingface rerank score
+                const radius = isSelected ? 8 + (contextData.rerank_score * 12) : 5;
+
+                return {
+                    id: candidate.text,
+                    isSelected: isSelected,
+                    radius: radius,
+                    color: isSelected ? "var(--robco-green)" : "#1a401a",
+                    score: isSelected ? contextData.rerank_score.toFixed(3) : "Discarded", 
+                    source: candidate.source_file
+                };
+            });
 
             // adds a central "Query" node
-            nodes.push({ id: "QUERY", isSelected: true, radius: 20, color: "#fff" });
+            nodes.push({ id: "QUERY", isSelected: true, radius: 20, color: "#fff", source: "User Input", score: "N/A" });
 
             // 1. link all selected nodes to the centry query
             const links = payload.selected_context.map(c => ({
@@ -52,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 .force("collide", d3.forceCollide().radius(d => d.radius + 2));
 
             // 3. draw elements
+            const tooltip = d3.select("#d3-tooltip");
             const link = svg.append("g")
                 .selectAll("line")
                 .data(links)
@@ -65,7 +76,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     .join("circle")
                     .attr("r", d => d.radius)
                     .attr("fill", d => d.color)
-                    .call(d3.drag() // optional dragability
+                    .on("mouseover", function(event, d) {
+                        d3.select(this).attr("stroke", "#fff").attr("stroke-width", 2);
+    
+                    tooltip.transition().duration(200).style("opacity", .95);
+                        tooltip.html(`<strong>File:</strong> ${d.source}<br/><strong>Match Score:</strong> ${d.score}<br/><hr style="border-color:var(--robco-green);"/>${d.id.substring(0, 80)}...`)
+                            .style("left", (event.pageX + 15) + "px")
+                            .style("top", (event.pageY - 28) + "px");
+                    })
+                    .on("mouseout", function(event, d) {
+                        d3.select(this).attr("stroke", null);
+                        tooltip.transition().duration(500).style("opacity", 0);
+                    })
+                    .call(d3.drag() 
                         .on("start", dragstarted)
                         .on("drag", dragged)
                         .on("end", dragended));
