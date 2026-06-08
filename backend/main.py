@@ -69,12 +69,17 @@ async def analyze_load_order_file(file: UploadFile = File(...)):
         bad_mods_found = detect_problematic_mods(user_plugins)
 
         diagnostics = []
-        for mod in bad_mods_found:
-            # give users a solution for any broken mod that got flagged
-            query = f"Explain why the mod '{mod}' is broken or outdated, and tell me the modern alternative to use instead."
+
+        # reminder: previous method was way too expensive (API for every bad mod)
+        # Batch every bad mod --> LLM only needs to run API once rather than every single time it saw it
+        if bad_mods_found:
+            # combine all bad mods into 1 comma-separeated string
+            mods_list_str = ", ".join(bad_mods_found)
+            query = f"The user's load order contains the following outdated/broken mods: {mods_list_str}. Briefly explain why each is broken and list the modern alternative."
+
             rag_result = engine.run_query(query)
             diagnostics.append({
-                "mod_name": mod,
+                "mod_name": "Multiple Issues Detected",
                 "issue_description": rag_result["answer"]
             })
 
