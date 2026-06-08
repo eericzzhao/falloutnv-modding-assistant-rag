@@ -16,7 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
         } else { 
             // parse markdown if llm response otherwise print raw text
             if (isMarkdown) {
-                msgDiv.textContent = marked.parse(text);
+                //msgDiv.textContent = marked.parse(text);
+                msgDiv.innerHTML = marked.parse(text);
             } else {
                 msgDiv.textContent = text;
             }

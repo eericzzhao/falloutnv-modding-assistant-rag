@@ -117,3 +117,31 @@ button:hover {
 .drop-zone:hover {
     background-color: var(--robco-dark);
 }
+
+/* Markdown Normalization for Terminal Theme */
+#output-log p {
+    margin: 5px 0;
+}
+
+#output-log ul, #output-log ol {
+    margin: 5px 0;
+    padding-left: 25px;
+}
+
+#output-log li {
+    margin-bottom: 3px;
+}
+
+#output-log code {
+    background-color: var(--robco-dark);
+    border: 1px solid var(--robco-green);
+    padding: 2px 4px;
+    font-family: inherit;
+}
+
+#output-log pre code {
+    display: block;
+    padding: 10px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
