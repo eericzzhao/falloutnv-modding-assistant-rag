@@ -64,6 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     .data(nodes)
                     .join("circle")
                     .attr("r", d => d.radius)
+                    .attr("fill", d => d.color)
                     .call(d3.drag() // optional dragability
                         .on("start", dragstarted)
                         .on("drag", dragged)
@@ -82,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // drag simulation functions
             function dragstarted(event){
-                if (!event.active) simualation.alphaTarget(0.3).restart();
+                if (!event.active) simulation.alphaTarget(0.3).restart();
                 event.subject.fx = event.subject.x;
                 event.subject.fy = event.subject.y;
             }
@@ -119,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             appendMessage(`> DATA RETRIEVED: ${data.answer}`);
 
-            renderRAGGraph()
+            renderRAGGraph(data)
             console.log("Telemetry Payload for D3.js:", data);
         } catch (error) {
             outputLog.removeChild(outputLog.lastChild);
