@@ -3,12 +3,14 @@ python-dotenv
 langchain
 langchain-core
 langchain-community
-langchain-chroma
+#langchain-chroma
+langchain-qdrant
+qdrant-client
 langchain-huggingface
 langchain-google-genai
 sentence-transformers
 rank_bm25
-chromadb
+#chromadb
 google-generativeai
 fastapi
 uvicorn

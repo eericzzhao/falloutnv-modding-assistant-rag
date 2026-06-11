@@ -6,7 +6,9 @@ import time
 from typing import Dict, List, Any
 from dotenv import load_dotenv
  
-from langchain_chroma import Chroma
+#from langchain_chroma import Chroma
+from langchain_qdrant import QdrantVectorStore
+from qdrant_client import QdrantClient
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.retrievers import BM25Retriever
@@ -18,8 +20,9 @@ from langchain_classic.retrievers.document_compressors import CrossEncoderRerank
 # this will load the environment variable from .env automaticlly
 load_dotenv()
 
-DB_DIR = "./vnv_chroma_db"
+#DB_DIR = "./vnv_chroma_db"
 TELEMETRY_DB_PATH = "telemetry.db"
+CHUNKS_PATH = "chunks.pkl"
 
 # Dictionary of known horrible, outdated mods (unformatted bc it doesn't matter what's in here)
 KNOWN_BAD_MODS = {"New Vegas Stutter Remover": ["NVSR.esp", "nvse_stutter_remover.dll"], "Project Nevada": ["Project Nevada - Core.esm", "Project Nevada - Cyberware.esp", "Project Nevada - Equipment.esm"], "Zan AutoPurge": ["Zan_AutoPurge_SmartAgro_NV.esp"], "Unlimited Companions": ["UnlimitedCompanions.esp"], "Solid Project": ["SolidPorject.esm"]}
@@ -51,13 +54,21 @@ class FalloutRAGEngine:
 
         # 1. Embeddings & Vector DB
         self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-        self.vector_db = Chroma(persist_directory=DB_DIR, embedding_function=self.embeddings)
+        # qdrant cloud vector db connection
+        qdrant_url = os.environ.get("QDRANT_URL")
+        qdrant_api_key = os.environ.get("QDRANT_API_KEY")
+        self.qdrant_client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
+        self.vector_db = QdrantVectorStore(
+            client=self.qdrant_client,
+            collection_name="fnvma",
+            embedding=self.embeddings
+        )
         self.dense_retriever = self.vector_db.as_retriever(search_kwargs={"k": 15})
 
         # 2. Sparse Retriever (BM25)
-        chunks_path = os.path.join(DB_DIR, "chunks.pkl")
-        if os.path.exists(chunks_path):
-            with open(chunks_path, "rb") as f:
+
+        if os.path.exists(CHUNKS_PATH):
+            with open(CHUNKS_PATH, "rb") as f:
                 raw_chunks = pickle.load(f)
             self.sparse_retriever = BM25Retriever.from_documents(raw_chunks)
             self.sparse_retriever.k = 15

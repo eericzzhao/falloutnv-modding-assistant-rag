@@ -29,6 +29,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://eericzzhao.github.io", # production
+        "https://fnvma.vercel.app", # vercel server
         "http://127.0.0.1:5500", # local live server
         "http://localhost:5500",
         "http://127.0.0.1:8000", # fallback local ports
