@@ -1,2 +1,28 @@
 version: '3.8'
 
+services:
+  # 1. the FastAPI backend
+  backend: .
+  ports:
+    - "8000:8000"
+  env_file:
+    - .env # pass GOOGLE_API_KEY to container
+  volumes:
+  # mounts the local volume so telemetry.db continues to exist even if the container restarts
+    - telemetry_data:/app/telemetry.db
+  
+# 2. frontend
+frontend:
+  image: nginx:alpine
+  ports:
+    - "80:80"
+  volumes:
+  # mounts HTML/CSS/JS files into Nginx server
+    - ./index.html:/usr/share/nginx/html/index.html
+    - ./style.css:/usr/share/nginx/html/style.css
+    - ./app.js:/usr/share/nginx/html/app.js
+    - ./terminal_art.jpg:/usr/share/nginx/html/terminal_art.jpg
+  depends_on:
+    - backend
+volumes:
+  telemetry_data:
