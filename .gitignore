@@ -9,4 +9,3 @@ venv/
 
 # Local Vector Database & Cache
 __pycache__/
-.streamlit/
