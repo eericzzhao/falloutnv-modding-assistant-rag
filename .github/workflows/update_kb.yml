@@ -22,6 +22,7 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip' #speeds up consecutive runs
+          cache-dependency-path: 'backend/requirements.txt'
 
       - name: Install Dependencies
         run: |
