@@ -8,45 +8,39 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body class="crt">
-    <div class="art-background-wrapper">
-        <div class="screen-overlay">
-            <div class="terminal-container">
-                <header class="terminal-header">
-                    <h1>ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM</h1>
-                    <p>COPYRIGHT 2075-2077 ROBCO INDUSTRIES</p>
-                    <p>-Server 1- FNV RAG Diagnostic Node</p>
-                </header>
+    <div class="terminal-container">
+        <header class="terminal-header">
+            <h1>ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM</h1>
+            <p>COPYRIGHT 2075-2077 ROBCO INDUSTRIES</p>
+            <p>-Server 1- FNV RAG Diagnostic Node</p>
+        </header>
 
-                <main class="terminal-content split-layout">
-                    <section id="chat-zone" class="pane">
-                        <div id="output-log"></div>
-                        <form class="input-line" id="chat-form">
-                            <span class="prompt">></span>
-                            <input type="text" id="user-input" placeholder="Take a sip of your Vault-Tec Canteen..." autocomplete="off" autofocus>
-                        </form>
-                    </section>
+        <main class="terminal-content split-layout">
+            <section id="chat-zone" class="pane">
+                <div id="output-log"></div>
+                <form class="input-line" id="chat-form">
+                    <span class="prompt">></span>
+                    <input type="text" id="user-input" placeholder="Take a sip of your Vault-Tec Canteen..." autocomplete="off" autofocus>
+                </form>
+            </section>
 
-                    <section id="diagnostic-zone" class="pane right-pane">
-                        <div class="pane-header">> Vector Pipeline Telemetry</div>
+            <section id="diagnostic-zone" class="pane right-pane">
+                <div class="pane-header">> Vector Pipeline Telemetry</div>
 
-                        <div id="d3-container" style="width: 100%; flex-grow:1; border:1px solid var(--robco-green); margin-bottom: 20px;">
-                            <svg id="rag-visualizer" width="100%" height="100%"></svg>
-                        </div>
-                        <div id="d3-tooltip" style="position: absolute; opacity: 0; background: var(--robco-dark); border:1px solid var(--robco-green); color: var(--robco-green); padding: 10px; pointer-events: none; max-width: 250px; font-size: 0.85rem; z-index: 10; box-shadow: 0 0 5px var(--robco-green);"></div>
-                        <div class="drop-zone" id="drop-zone">
-                            <div class="drop-icon">[v]</div>
-                            <p>> DRAG/DROP LOARDORDER.TXT FOR DIAGNOSTICS</p>
-                            <input type="file" id="file-input" accept=".txt" hidden>
-                        </div>
-                        <div id="diagnostic-results"></div>
-                    </section>
-                </main>
-        </div>
-
-        </div>
-        
+                <div id="d3-container" style="width: 100%; flex-grow:1; border:1px solid var(--robco-green); margin-bottom: 20px;">
+                    <svg id="rag-visualizer" width="100%" height="100%"></svg>
+                </div>
+                <div id="d3-tooltip" style="position: absolute; opacity: 0; background: var(--robco-dark); border:1px solid var(--robco-green); color: var(--robco-green); padding: 10px; pointer-events: none; max-width: 250px; font-size: 0.85rem; z-index: 10; box-shadow: 0 0 5px var(--robco-green);"></div>
+                <div class="drop-zone" id="drop-zone">
+                    <div class="drop-icon">[v]</div>
+                    <p>> DRAG/DROP LOADORDER.TXT FOR DIAGNOSTICS</p>
+                    <input type="file" id="file-input" accept=".txt" hidden>
+                </div>
+                <div id="diagnostic-results"></div>
+            </section>
+        </main>
     </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="app.js"></script>
 </body>
-</html>
