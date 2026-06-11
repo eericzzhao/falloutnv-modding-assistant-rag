@@ -13,155 +13,135 @@ load_dotenv()
 NEXUS_API_KEY = os.getenv("NEXUS_API_KEY")
 GAME_DOMAIN = "newvegas"
 
+# State tracking files
+QUEUE_FILE = "mod_queue.txt"
+PROCESSED_FILE = "processed_mods.txt"
+DAILY_LIMIT = 50
+
 headers = {
     "accept": "application/json",
     "apikey": NEXUS_API_KEY
 }
 
-# 1. The Hardcoded Essentials
-ESSENTIAL_MOD_IDS = [
-    58277,  # JIP LN NVSE Plugin
-    51664,  # YUP - Base Game and All DLC
-    62552,  # JohnnyGuitar NVSE
-    68714,  # NVTF - New Vegas Tick Fix
-]
-
 def clean_html(raw_html):
-    """Strips HTML tags from the Nexus Mods description."""
-    if not raw_html:
-        return ""
-    soup = BeautifulSoup(raw_html, "html.parser")
-    return soup.get_text(separator="\n").strip()
+    if not raw_html: return ""
+    return BeautifulSoup(raw_html, "html.parser").get_text(separator="\n").strip()
+
+def load_tracker(filepath):
+    """Loads IDs from a text file into a list."""
+    if not os.path.exists(filepath): return []
+    with open(filepath, "r") as f:
+        return [line.strip() for line in f if line.strip().isdigit()]
+
+def save_tracker(filepath, data_list):
+    """Saves a list of IDs back to a text file."""
+    with open(filepath, "w") as f:
+        for item in data_list:
+            f.write(f"{item}\n")
 
 def fetch_and_parse_mod(mod_id):
-    """Fetches mod data and formats it for LangChain."""
+    """Fetches mod data from Nexus API and formats it."""
     url = f"https://api.nexusmods.com/v1/games/{GAME_DOMAIN}/mods/{mod_id}.json"
     response = requests.get(url, headers=headers)
     
     if response.status_code == 200:
         data = response.json()
-        
         page_content = (
+            f"[NEXUS MODS LIVE DATA]\n"
             f"Mod Name: {data.get('name')}\n"
             f"Version: {data.get('version')}\n"
             f"Endorsements: {data.get('endorsement_count')}\n\n"
             f"Description:\n{clean_html(data.get('description'))}"
         )
-        
         metadata = {
             "mod_id": mod_id,
             "name": data.get("name"),
             "version": data.get("version"),
             "source": url
         }
-        
         return {"page_content": page_content, "metadata": metadata}
-        
     elif response.status_code == 429:
-        print(f"Rate limit hit on mod {mod_id}. Sleeping...")
-        time.sleep(60)
-        return None
-    else:
-        print(f"Error {response.status_code} fetching mod {mod_id}")
-        return None
+        print(f"Rate limit hit on mod {mod_id}.")
+    return None
 
-def fetch_trending_mods():
-    """
-    Queries the API for currently trending mods. 
-    This captures the most popular mods of the week/month.
-    """
-    url = f"https://api.nexusmods.com/v1/games/{GAME_DOMAIN}/mods/trending.json"
-    response = requests.get(url, headers=headers)
+def fetch_dynamic_discovery_mods():
+    """Finds brand new and trending mods dynamically."""
+    discovered_ids = []
+    endpoints = ["trending.json", "latest_added.json", "latest_updated.json"]
     
-    if response.status_code == 200:
-        # Cap to top 10 to avoid hitting rate limits instantly
-        return [mod["mod_id"] for mod in response.json()[:10]] 
-    else:
-        print("Failed to fetch trending mods.")
-        return []
+    for ep in endpoints:
+        url = f"https://api.nexusmods.com/v1/games/{GAME_DOMAIN}/mods/{ep}"
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            discovered_ids.extend([str(mod["mod_id"]) for mod in response.json()[:5]])
+    return list(set(discovered_ids))
 
-def fetch_latest_updated_mods():
-    """Queries the API for recently updated mods."""
-    url = f"https://api.nexusmods.com/v1/games/{GAME_DOMAIN}/mods/latest_updated.json"
-    response = requests.get(url, headers=headers)
-    
-    if response.status_code == 200:
-        return [mod["mod_id"] for mod in response.json()[:10]]
-    else:
-        print("Failed to fetch latest updated mods.")
-        return []
-
-def run_ingestion_pipeline():
+def run_drip_feed_pipeline():
+    queue = load_tracker(QUEUE_FILE)
+    processed = set(load_tracker(PROCESSED_FILE))
     documents = []
-    processed_ids = set() # Tracks IDs to prevent duplication
     
-    print("Step 1: Ingesting Essential Mods...")
-    for mod_id in ESSENTIAL_MOD_IDS:
+    print(f"Starting pipeline. {len(queue)} mods in queue. {len(processed)} mods already processed.")
+    
+    # 1. Take the top 50 from the queue
+    batch_ids = queue[:DAILY_LIMIT]
+    remaining_queue = queue[DAILY_LIMIT:]
+    
+    # 2. Add dynamically discovered new mods to the batch
+    discovery_ids = fetch_dynamic_discovery_mods()
+    for d_id in discovery_ids:
+        if d_id not in processed and d_id not in batch_ids:
+            batch_ids.append(d_id)
+            
+    print(f"Fetching data for {len(batch_ids)} mods...")
+    
+    successfully_processed = []
+    
+    for mod_id in batch_ids:
+        if str(mod_id) in processed:
+            continue
+            
         doc = fetch_and_parse_mod(mod_id)
         if doc:
             documents.append(doc)
-            processed_ids.add(mod_id)
-        time.sleep(1) # Be gentle on the API
+            successfully_processed.append(str(mod_id))
+            processed.add(str(mod_id))
+        time.sleep(1.5) # Anti-rate-limit buffer
         
-    print("Step 2: Discovering Trending Mods...")
-    trending_ids = fetch_trending_mods()
-    for mod_id in trending_ids:
-        if mod_id not in processed_ids:
-            doc = fetch_and_parse_mod(mod_id)
-            if doc:
-                documents.append(doc)
-                processed_ids.add(mod_id)
-            time.sleep(1)
-            
-    print("Step 3: Discovering Latest Updated Mods...")
-    updated_ids = fetch_latest_updated_mods()
-    for mod_id in updated_ids:
-        if mod_id not in processed_ids:
-            doc = fetch_and_parse_mod(mod_id)
-            if doc:
-                documents.append(doc)
-                processed_ids.add(mod_id)
-            time.sleep(1)
-            
-    print(f"\nIngestion complete. Prepared {len(documents)} mod documents for the vector database.")
+    print(f"Successfully scraped {len(documents)} new documents.")
+    
+    # 3. Save the updated states back to disk
+    save_tracker(QUEUE_FILE, remaining_queue)
+    save_tracker(PROCESSED_FILE, list(processed))
+    
     return documents
 
 if __name__ == "__main__":
-    print("Initializing Nexus Mods Ingestion Pipeline...")
-    
     if not NEXUS_API_KEY:
         print("ERROR: NEXUS_API_KEY environment variable is not set.")
-    else:
-        parsed_docs = run_ingestion_pipeline()
+        exit(1)
         
-        print("\n--- Ingestion Summary ---")
-        langchain_documents = []
-        for doc in parsed_docs:
-            mod_name = doc['metadata']['name'] if doc['metadata']['name'] else f"Unknown Mod (ID: {doc['metadata']['mod_id']})"
-            print(f" - Preparing: {mod_name}")
-            
-            langchain_documents.append(
-                Document(
-                    page_content=doc['page_content'],
-                    metadata=doc['metadata']
-                )
-            )
-            
-        print("\nChunking documents...")
+    parsed_docs = run_drip_feed_pipeline()
+    
+    if parsed_docs:
+        langchain_documents = [
+            Document(page_content=d['page_content'], metadata=d['metadata']) 
+            for d in parsed_docs
+        ]
+        
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         final_chunks = text_splitter.split_documents(langchain_documents)
-        print(f"Created {len(final_chunks)} text chunks.")
         
-        print("\nEmbedding and saving to existing ChromaDB...")
-        # Keeping the 384-dimension model you used to avoid the dimension mismatch error
-        embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2" 
-        )
+        # Using the memory-efficient Google embeddings if you swapped, 
+        # otherwise keep HuggingFaceEmbeddings here!
+        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
         
+        print("Embedding into ChromaDB...")
         db = Chroma.from_documents(
             documents=final_chunks, 
             embedding=embeddings, 
             persist_directory="./vnv_chroma_db"
         )
-        
-        print("Database successfully expanded!")
+        print("Database expansion complete!")
+    else:
+        print("No new mods to process today.")

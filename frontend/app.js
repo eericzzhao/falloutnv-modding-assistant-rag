@@ -189,7 +189,61 @@ document.addEventListener("DOMContentLoaded", async () => {
         
         appendMessage(query, true);
         userInput.value = '';
-        appendMessage("PROCESSING QUERY...", false);
+        // appendMessage("PROCESSING QUERY...", false);
+        let loadingInterval;
+        const loadingDiv = document.createElement('div');
+        loadingDiv.style.color = 'var(--robco-green)';
+
+        function startLoadingAnimations() {
+            outputLog.appendChild(loadingDiv);
+            const steps = [
+                "> Initializing terminal link...",
+                "> Vectorizing user query...",
+                "> Scanning load order matrices...",
+                "> Retrieving Nexus Mods telemetry...",
+                "> Applying cross-encorder re-ranking...",
+                "> Synthesizing diagnostic report..."
+            ];
+            let stepIndex = 0;
+            loadingDiv.innerText = steps[stepIndex];
+            outputLog.scrollTop = outputLog.scrollHeight;
+
+            loadingInterval = setInterval(() => {
+                stepIndex++;
+                if (stepIndex < steps.length) {
+                    loadingDiv.innerText = steps[stepIndex];
+                } else {
+                    loadingDiv.innerText = steps[steps.length - 1] + " _";               
+                }
+                outputLog.scrollTop = outputLog.scrollHeight;
+            }, 1200); // change step every 1.2 seconds
+
+            const circles = d3.selectAll("circle");
+            if (!circles.empty()) {
+                function pulse() {
+                    circles.transition()
+                        .duration(600)
+                        .attr("r", d => d.radius ? d.radius + 4 : 10) // expand
+                        .style("opacity", 0.4)
+                        .transition()
+                        .duration(600)
+                        .attr("r", d => d.radius ? d.radius : 6) // Shrink back to normal
+                        .style("opacity", 1)
+                        .on("end", pulse);
+
+                }
+                pulse();
+            }
+        }
+        function stopLoadingAnimations() {
+            clearInterval(loadingInterval);
+            if (outputLog.contains(loadingDiv)) {
+                outputLog.removeChild(loadingDiv);
+            }
+            d3.selectAll("circle").interrupt() // stops the pulsing
+        }
+
+        startLoadingAnimations();
 
         try {
             const response = await fetch( `${API_BASE_URL}/query`, {
@@ -204,8 +258,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 throw new Error(errorData.detail || `HTTP Error ${response.status}`);
             }
             const data = await response.json();
+
+            stopLoadingAnimations();
             // removes the "processing..."" text
-            outputLog.removeChild(outputLog.lastChild);
+            //outputLog.removeChild(outputLog.lastChild);
 
             // print the header immediately
             appendMessage(`> DATA RETRIEVED:`, false, false, true);

@@ -45,4 +45,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: auto-update Chroma DB (Base + Nexus Mods)"
-          file_pattern: "vnv_chroma_db/*" # targets the DB directory
+          file_pattern: "vnv_chroma_db/* backend/*.txt" # targets the DB directory
