@@ -11,9 +11,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Route to localhost during dev, and Render during production
     const API_BASE_URL = isLocal 
-        ? "http://127.0.0.1:10000/api/v1" 
-        : "https://fnv-rag-backend.onrender.com/api/v1";
-    
+        ? "http://127.0.0.1:7860/api/v1" 
+        : "https://eericzzhao-fnv-rag-backend.hf.space/api/v1";     
 
     // dom-aware typewriter/terminal effect
     async function typewriterHTML(targetElement, htmlString, speed = 15) {
