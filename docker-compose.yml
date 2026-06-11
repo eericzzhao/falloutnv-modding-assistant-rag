@@ -6,8 +6,6 @@ services:
       - "8000:8000"
     env_file:
       - .env 
-    volumes:
-      - telemetry_data:/app/telemetry.db 
 
   # 2. The Vanilla Frontend
   frontend:
@@ -15,12 +13,9 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./index.html:/usr/share/nginx/html/index.html
-      - ./style.css:/usr/share/nginx/html/style.css
-      - ./app.js:/usr/share/nginx/html/app.js
-      - ./terminal_art.jpg:/usr/share/nginx/html/terminal_art.jpg
+      - ./frontend/index.html:/usr/share/nginx/html/index.html
+      - ./frontend/style.css:/usr/share/nginx/html/style.css
+      - ./frontend/app.js:/usr/share/nginx/html/app.js
     depends_on:
       - backend
 
-volumes:
-  telemetry_data:
