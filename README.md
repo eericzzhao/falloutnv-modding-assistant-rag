@@ -1,3 +1,12 @@
+---
+title: FNV RAG Backend
+emoji: ☢️
+colorFrom: yellow
+colorTo: red
+sdk: docker
+app_port: 7860
+---
+
 # FNVMA: Fallout New Vegas Modding Assistant
 
 > A production-grade, decoupled Retrieval-Augmented Generation (RAG) application designed to diagnose unstable load orders and answer highly specific technical modding questions for Fallout: New Vegas.

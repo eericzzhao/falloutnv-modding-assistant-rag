@@ -10,3 +10,7 @@ venv/
 # Local Vector Database & Cache
 __pycache__/
 vnv_chroma_db/
+
+*.webp
+*.png
+*.7z
