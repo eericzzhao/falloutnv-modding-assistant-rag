@@ -6,7 +6,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const outputLog = document.getElementById('output-log');
 
     // api connecting config
-    const API_BASE_URL = "http://127.0.0.1:8000/api/v1";
+    const API_BASE_URL = "https://falloutnv-modding-assistant-rag.onrender.com";
+    //"http://127.0.0.1:8000/api/v1";
 
     // dom-aware typewriter/terminal effect
     async function typewriterHTML(targetElement, htmlString, speed = 15) {
