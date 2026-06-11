@@ -21,7 +21,9 @@ from langchain_classic.retrievers.document_compressors import CrossEncoderRerank
 load_dotenv()
 
 #DB_DIR = "./vnv_chroma_db"
-TELEMETRY_DB_PATH = "telemetry.db"
+#TELEMETRY_DB_PATH = "telemetry.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TELEMETRY_DB_PATH = os.path.join(BASE_DIR, "telemetry.db")
 CHUNKS_PATH = "chunks.pkl"
 
 # Dictionary of known horrible, outdated mods (unformatted bc it doesn't matter what's in here)
