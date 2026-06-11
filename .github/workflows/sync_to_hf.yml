@@ -18,5 +18,4 @@ jobs:
       - name: Push to Hugging Face
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        # Replace YOUR_USERNAME and YOUR_SPACE_NAME below!
         run: git push --force https://eericzzhao:$HF_TOKEN@huggingface.co/spaces/eericzzhao/fnv-rag-backend master:main
