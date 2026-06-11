@@ -6,8 +6,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const outputLog = document.getElementById('output-log');
 
     // api connecting config
-    const API_BASE_URL = "https://falloutnv-modding-assistant-rag.onrender.com";
-    //"http://127.0.0.1:8000/api/v1";
+    // Automatically detect the environment
+    const isLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+
+    // Route to localhost during dev, and Render during production
+    const API_BASE_URL = isLocal 
+        ? "http://127.0.0.1:10000/api/v1" 
+        : "https://fnv-rag-backend.onrender.com/api/v1";
+    
 
     // dom-aware typewriter/terminal effect
     async function typewriterHTML(targetElement, htmlString, speed = 15) {
