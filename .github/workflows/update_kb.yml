@@ -34,9 +34,14 @@ jobs:
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           # required for gemini model
+
+      - name: Run Nexus Mods Ingestion Script
+        run: python build_pipeline_NM.py
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
         
       - name: Commit and Push Updated Vector DB
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: auto-update Chroma DB and chunks.pkl"
+          commit_message: "chore: auto-update Chroma DB (Base + Nexus Mods)"
           file_pattern: "vnv_chroma_db/*" # targets the DB directory
