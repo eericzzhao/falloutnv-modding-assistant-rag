@@ -10,3 +10,6 @@ sentence-transformers
 rank_bm25
 chromadb
 google-generativeai
+fastapi
+uvicorn
+python-multipart

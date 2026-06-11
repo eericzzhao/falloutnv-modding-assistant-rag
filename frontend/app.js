@@ -68,8 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         outputLog.scrollTop = outputLog.scrollHeight;
     }
-    await appendMessage("System initialized. Knowledge base loaded.", false, false, true);
-    await appendMessage("Awaitng user input...", false, false, true); 
+
 
     async function handleQuery() {
         function renderRAGGraph(payload) {
@@ -262,5 +261,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
     });
+    await appendMessage("System initialized. Knowledge base loaded.", false, false, true);
+    await appendMessage("Awaitng user input...", false, false, true); 
 
 })
