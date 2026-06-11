@@ -4,13 +4,16 @@ import time
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_chroma import Chroma
+from langchain_qdrant import QdrantVectorStore
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 
 load_dotenv() 
 
 NEXUS_API_KEY = os.getenv("NEXUS_API_KEY")
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+
 GAME_DOMAIN = "newvegas"
 
 # State tracking files
@@ -121,6 +124,10 @@ if __name__ == "__main__":
         print("ERROR: NEXUS_API_KEY environment variable is not set.")
         exit(1)
         
+    if not QDRANT_URL or not QDRANT_API_KEY:
+        print("ERROR: QDRANT_URL or QDRANT_API_KEY environment variables are not set.")
+        exit(1)
+        
     parsed_docs = run_drip_feed_pipeline()
     
     if parsed_docs:
@@ -132,15 +139,15 @@ if __name__ == "__main__":
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         final_chunks = text_splitter.split_documents(langchain_documents)
         
-        # Using the memory-efficient Google embeddings if you swapped, 
-        # otherwise keep HuggingFaceEmbeddings here!
         embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
         
-        print("Embedding into ChromaDB...")
-        db = Chroma.from_documents(
+        print("Embedding and uploading to Qdrant Cloud...")
+        db = QdrantVectorStore.from_documents(
             documents=final_chunks, 
             embedding=embeddings, 
-            persist_directory="./vnv_chroma_db"
+            url=QDRANT_URL,
+            api_key=QDRANT_API_KEY,
+            collection_name="fnvma"
         )
         print("Database expansion complete!")
     else:
