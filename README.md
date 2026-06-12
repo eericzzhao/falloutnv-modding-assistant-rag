@@ -10,8 +10,9 @@ app_port: 7860
 # FNVMA: Fallout New Vegas Modding Assistant
 
 > A production-grade, decoupled Retrieval-Augmented Generation (RAG) application designed to diagnose unstable load orders and answer highly specific technical modding questions for Fallout: New Vegas.
-> 
-> **🔴 Live Application:** [fnvma.vercel.app](https://fnvma.vercel.app)
+>
+> Feel free to test the service.
+> **Live Application:** [fnvma.vercel.app](https://fnvma.vercel.app)
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)
