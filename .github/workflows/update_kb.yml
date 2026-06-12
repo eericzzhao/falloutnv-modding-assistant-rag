@@ -39,6 +39,6 @@ jobs:
       - name: Commit and Push State Trackers
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: update Nexus Mods ingestion tracking queues"
-          # Only commit the .txt tracker files in the root
-          file_pattern: "mod_queue.txt processed_mods.txt" 
+          commit_message: "chore: update Nexus Mods ingestion tracking queues and BM25 dictionary"
+          # update the mods list that's in queue, what we've processed, and the BM25 dicitonary
+          file_pattern: "mod_queue.txt processed_mods.txt chunks.pkl" 

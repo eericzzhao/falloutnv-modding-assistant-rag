@@ -1,10 +1,13 @@
 import os
 import requests
 import time
+import pickle
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_qdrant import QdrantVectorStore
+from qdrant_client import QdrantClient
+from qdrant_client.http.models import Distance, VectorParams
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 
@@ -150,5 +153,22 @@ if __name__ == "__main__":
             collection_name="fnvma"
         )
         print("Database expansion complete!")
+        chunks_path = "chunks.pkl"
+
+        # load existing chunks if the file exists
+        if os.path.exists(chunks_path):
+            with open(chunks_path, "rb") as f:
+                existing_chunks = pickle.load(f)
+        else:
+            existing_chunks = []
+
+        # appending the exisitng nexus mod chunks with the new ones
+        existing_chunks.extend(final_chunks)
+
+        # save the updated master list back to disk
+        with open(chunks_path, "wb") as f:
+            pickle.dump(existing_chunks, f)
+        
+        print(f"Successfully added {len(final_chunks)} new chunks to the BM25 database!")
     else:
-        print("No new mods to process today.")
+        print("No new mods to process today. Let's doomscroll on Nexus Mods again tomorrow!")
