@@ -16,10 +16,8 @@ app_port: 7860
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat&logo=github-actions&logoColor=white)
 
 > A production-grade, decoupled Retrieval-Augmented Generation (RAG) application designed to diagnose unstable load orders and answer highly specific technical modding questions for Fallout: New Vegas.
->
-> Feel free to test the service.
 > 
-> **Live Application:** [Website](https://fnvma.vercel.app)
+> **🔴 Live Application:** [fnvma.vercel.app](https://fnvma.vercel.app)
 
 ## Executive Summary
 FNVMA transitions the traditional approach to game modding diagnostics from manual text-parsing to a modern, AI-driven workflow. Originally built as a monolithic prototype, the system has been entirely re-architected into a scalable client-server application. It demonstrates full-stack machine learning infrastructure, interactive data visualization, and applied statistical analysis to resolve complex modding conflicts and prevent game instability.
@@ -46,19 +44,49 @@ Observability and automation are built into the core of FNVMA to prove the effic
 * **Asynchronous Telemetry Engine:** A persistent SQLite database silently logs pipeline metrics for every query. Captured data includes candidate pool sizes, selected context chunks, latency metrics, and average rerank scores.
 * **Statistical Performance Profiling:** Utilizes `pandas` and `scikit-learn` to conduct Ordinary Least Squares (OLS) regression on logged telemetry. This isolates vector retrieval overhead from API network constraints, allowing us to mathematically optimize the `k` value in the ensemble retriever based on baseline LLM generation latency.
 
-## Strategic Roadmap (Future Deployments)
+## Installation & Local Setup
 
-- [x] **Cloud Vector DB Migration:** Transitioned the local ChromaDB instance to **Qdrant Cloud** to completely decouple storage from the application logic, enabling fully stateless, ephemeral deployments.
-- [x] **Containerization & Deployment:** Wrapped the FastAPI backend into a `Dockerfile` hosted on Hugging Face Spaces, and deployed the custom CRT-styled frontend to a Vercel edge network for a live, zero-friction interactive portfolio link.
-- [ ] **Quantitative A/B Testing:** Build a testing framework to programmatically measure the statistical significance of different Ensemble Retriever weightings (e.g., evaluating 50/50 vs. 70/30 Dense/Sparse splits for context precision).
+Follow these steps to run the complete, decoupled environment on your local machine.
 
-## Tech Stack
+### Prerequisites
+* Python 3.10 or 3.11
+* A Qdrant Cloud cluster (or a local Qdrant instance)
+* A Gemini API Key
+* A Nexus Mods Personal API Key
 
-* **Frontend & Visualization:** Vanilla JavaScript, D3.js, HTML/CSS, Vercel
-* **Backend & API:** FastAPI, Python, Docker, Nexus Mods API, Hugging Face Spaces
-* **AI & Retrieval:** Qdrant Cloud, HuggingFace (Sentence Transformers & Cross-Encoders), BM25, LangChain
-* **Automation:** GitHub Actions (GitOps & ETL workflows)
-* **Data Science & Telemetry:** SQLite, Pandas, Scikit-learn, BeautifulSoup4
+### 1. Backend Installation & Setup
+Navigate to the backend directory and set up your virtual environment:
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows use: venv\Scripts\activate
+pip install -r requirements.txt
+```
+### 2. Setting Up API Credentials
+Create a `.env` file in the root directory and setup your API credentials:
+```
+GEMINI_API_KEY=your_gemini_api_key_here
+NEXUS_API_KEY=your_nexus_api_key_here
+QDRANT_URL=your_qdrant_cloud_url_here
+QDRANT_API_KEY=your_qdrant_api_key_here
+```
 
----
-*Patrolling the Mojave almost makes you wish for a nuclear winter.*
+### 3. Launching the Backend and Frontend
+We can now launch the backend FastAPI development server. 
+First, navigate to the backend folder and enter:
+```
+uvicorn main:app --reload --port 7860
+```
+The documentation and endpoints will be live at http://localhost:7860/docs.
+
+
+Our frontend is built entirely on vanilla modern Javascript and D3.js. 
+
+Afterwards, we can launch the frontend by navigating to the frontend folder with any lightweight static server (e.g. Python's built-in server, VS Code's Live Server):
+```
+cd ../frontend
+python -m http.server 8000
+```
+Open your browser and navigate to http://localhost:8000 to interact with the application.
+Note: Ensure your frontend configuration directs API fetches to your local backend endpoint (http://localhost:7860) during development.
+
