@@ -57,7 +57,6 @@ Follow these steps to run the complete, decoupled environment on your local mach
 ### 1. Backend Installation & Setup
 Navigate to the backend directory and set up your virtual environment:
 ```bash
-cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows use: venv\Scripts\activate
 pip install -r requirements.txt
