@@ -16,9 +16,9 @@ jobs:
         with:
           fetch-depth: 0 # required to push full history to new remote
           lfs: true # downloads the actual LFS files
-          
-      - name: Force LFS Pull
-        run: git lfs pull # safety net to guarantee binary is fully locally cached
+
+      - name: Fetch ALL historical LFS files
+        run: git lfs fetch --all # forces github to download all historical versions of the lfs files before pushing so hf knows where the reference is coming from
 
       - name: Push to Hugging Face
         env:
