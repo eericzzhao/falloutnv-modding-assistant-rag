@@ -1,0 +1,22 @@
+name: Keep Backend Alive
+
+on:
+  schedule:
+    #runs every 24 hours at 12 utc
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+
+jobs:
+  ping-services:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping FastAPI Backend
+        run: |
+          curl -sSf https://eericzzhao-fnv-rag-backend.hf.space/docs > /dev/null
+          echo "Successfully pinged Hugging Face!"
+      - name: Ping Qdrant Database
+      # uses Github secrets to directly queruy our specific collection status
+        run: |
+          curl -sSf -H "api-key: ${{ secrets.QDRANT_API_KEY }}" ${{ secrets.QDRANT_URL }}/collections/fnvma > /dev/null
+          echo "Successfully pinged Qdrant Cloud!"
+
