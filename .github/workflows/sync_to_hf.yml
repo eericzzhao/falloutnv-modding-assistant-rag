@@ -11,10 +11,15 @@ jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repo
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          lfs: true
+          fetch-depth: 0 # required to push full history to new remote
+          lfs: true # downloads the actual LFS files
+          
+      - name: Force LFS Pull
+        run: git lfs pull # safety net to guarantee binary is fully locally cached
+
       - name: Push to Hugging Face
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
