@@ -23,7 +23,7 @@ app_port: 7860
 FNVMA transitions the traditional approach to game modding diagnostics from manual text-parsing to a modern, AI-driven workflow. Originally built as a monolithic prototype, the system has been entirely re-architected into a scalable client-server application. It demonstrates full-stack machine learning infrastructure, interactive data visualization, and applied statistical analysis to resolve complex modding conflicts and prevent game instability.
 
 ## Application Interface
-![FNVMA System Interface](archived/Menu_Photo.png) *The FNVMA frontend featuring real-time, force-directed network graph visualization of the semantic vector space.*
+![FNVMA System Interface](archived/MenuScreen.png) *The FNVMA frontend featuring real-time, force-directed network graph visualization of the semantic vector space.*
 
 ## Core Architecture & AI Pipeline
 
