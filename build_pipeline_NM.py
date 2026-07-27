@@ -11,7 +11,9 @@ from qdrant_client.http.models import Distance, VectorParams
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 
-load_dotenv() 
+import s3_utils
+
+load_dotenv()
 
 NEXUS_API_KEY = os.getenv("NEXUS_API_KEY")
 QDRANT_URL = os.getenv("QDRANT_URL")
@@ -83,6 +85,10 @@ def fetch_dynamic_discovery_mods():
     return list(set(discovered_ids))
 
 def run_drip_feed_pipeline():
+    # S3 is the source of truth for tracker state (no-op if AWS_S3_BUCKET unset)
+    s3_utils.download_file(QUEUE_FILE, QUEUE_FILE)
+    s3_utils.download_file(PROCESSED_FILE, PROCESSED_FILE)
+
     queue = load_tracker(QUEUE_FILE)
     processed = set(load_tracker(PROCESSED_FILE))
     documents = []
@@ -116,10 +122,12 @@ def run_drip_feed_pipeline():
         
     print(f"Successfully scraped {len(documents)} new documents.")
     
-    # 3. Save the updated states back to disk
+    # 3. Save the updated states back to disk, then to S3
     save_tracker(QUEUE_FILE, remaining_queue)
     save_tracker(PROCESSED_FILE, list(processed))
-    
+    s3_utils.upload_file(QUEUE_FILE, QUEUE_FILE)
+    s3_utils.upload_file(PROCESSED_FILE, PROCESSED_FILE)
+
     return documents
 
 if __name__ == "__main__":
@@ -155,6 +163,9 @@ if __name__ == "__main__":
         print("Database expansion complete!")
         chunks_path = "chunks.pkl"
 
+        # pull the latest master chunk list from S3 before appending to it
+        s3_utils.download_file(chunks_path, chunks_path)
+
         # load existing chunks if the file exists
         if os.path.exists(chunks_path):
             with open(chunks_path, "rb") as f:
@@ -165,10 +176,11 @@ if __name__ == "__main__":
         # appending the exisitng nexus mod chunks with the new ones
         existing_chunks.extend(final_chunks)
 
-        # save the updated master list back to disk
+        # save the updated master list back to disk, then to S3
         with open(chunks_path, "wb") as f:
             pickle.dump(existing_chunks, f)
-        
+        s3_utils.upload_file(chunks_path, chunks_path)
+
         print(f"Successfully added {len(final_chunks)} new chunks to the BM25 database!")
     else:
         print("No new mods to process today. Let's doomscroll on Nexus Mods again tomorrow!")

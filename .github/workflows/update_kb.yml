@@ -6,9 +6,6 @@ on:
     - cron: '0 0 * * 0'
   workflow_dispatch: # allows to manually click "Run Workflow" on github
 
-permissions: 
-  contents: write # permision to commit files back to repo
-
 jobs:
   update-vector-db:
     runs-on: ubuntu-latest
@@ -37,10 +34,9 @@ jobs:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           QDRANT_URL: ${{ secrets.QDRANT_URL }}
           QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
-        
-      - name: Commit and Push State Trackers
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: update Nexus Mods ingestion tracking queues and BM25 dictionary"
-          # update the mods list that's in queue, what we've processed, and the BM25 dicitonary
-          file_pattern: "mod_queue.txt processed_mods.txt chunks.pkl" 
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          # mod_queue.txt, processed_mods.txt, and chunks.pkl are now synced to S3
+          # by build_pipeline_NM.py directly, so no commit-back-to-repo step is needed here

@@ -20,6 +20,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # copy the backend application code
 COPY --chown=user backend/ ./backend/
 COPY --chown=user analyze_telemetry.py .
+COPY --chown=user s3_utils.py .
 # copy local chunks.pkl file
 COPY --chown=user chunks.pkl .
 

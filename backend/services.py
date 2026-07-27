@@ -1,11 +1,14 @@
-# the RAG pipeline logic 
+# the RAG pipeline logic
 import os
 import pickle
 import sqlite3
+import threading
 import time
 from typing import Dict, List, Any
 from dotenv import load_dotenv
- 
+
+import s3_utils
+
 #from langchain_chroma import Chroma
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
@@ -26,10 +29,19 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TELEMETRY_DB_PATH = os.path.join(BASE_DIR, "telemetry.db")
 CHUNKS_PATH = "chunks.pkl"
 
+# S3 keys (see s3_utils.py) — bucket/artifact store for chunks.pkl + telemetry backups
+S3_CHUNKS_KEY = "chunks.pkl"
+S3_TELEMETRY_KEY = "telemetry/telemetry.db"
+TELEMETRY_SYNC_INTERVAL = 20  # upload telemetry.db to S3 every N logged queries
+
+_telemetry_log_count = 0
+
 # Dictionary of known horrible, outdated mods (unformatted bc it doesn't matter what's in here)
 KNOWN_BAD_MODS = {"New Vegas Stutter Remover": ["NVSR.esp", "nvse_stutter_remover.dll"], "Project Nevada": ["Project Nevada - Core.esm", "Project Nevada - Cyberware.esp", "Project Nevada - Equipment.esm"], "Zan AutoPurge": ["Zan_AutoPurge_SmartAgro_NV.esp"], "Unlimited Companions": ["UnlimitedCompanions.esp"], "Solid Project": ["SolidPorject.esm"]}
 
 def init_telemetry_db():
+    # pull down prior telemetry history (if any) so a redeploy doesn't wipe it
+    s3_utils.download_file(S3_TELEMETRY_KEY, TELEMETRY_DB_PATH)
     with sqlite3.connect(TELEMETRY_DB_PATH) as conn:
         conn.execute("""
             CREATE TABLE IF NOT EXISTS query_logs (
@@ -44,11 +56,22 @@ def init_telemetry_db():
         """)
 
 def log_telemetry(query: str, pool_size: int, context_size: int, avg_score:float, latency: float):
+    global _telemetry_log_count
     with sqlite3.connect(TELEMETRY_DB_PATH) as conn:
         conn.execute(
             "INSERT INTO query_logs (query, pool_size, context_size, avg_rerank_score, latency_ms) VALUES (?, ?, ?, ?, ?)",
             (query, pool_size, context_size, avg_score, latency)
         )
+
+    # periodically back up telemetry.db to S3 in the background so a redeploy
+    # doesn't lose history; doesn't block the request thread
+    _telemetry_log_count += 1
+    if _telemetry_log_count % TELEMETRY_SYNC_INTERVAL == 0:
+        threading.Thread(
+            target=s3_utils.upload_file,
+            args=(TELEMETRY_DB_PATH, S3_TELEMETRY_KEY),
+            daemon=True
+        ).start()
 
 class FalloutRAGEngine:
     def __init__(self):
@@ -68,6 +91,9 @@ class FalloutRAGEngine:
         self.dense_retriever = self.vector_db.as_retriever(search_kwargs={"k": 15})
 
         # 2. Sparse Retriever (BM25)
+
+        # pull the latest BM25 chunk store from S3 (no-op if AWS_S3_BUCKET unset)
+        s3_utils.download_file(S3_CHUNKS_KEY, CHUNKS_PATH)
 
         if os.path.exists(CHUNKS_PATH):
             with open(CHUNKS_PATH, "rb") as f:
