@@ -41,8 +41,9 @@ The backend is engineered for zero cold-start latency and mathematical precision
 
 Observability and automation are built into the core of FNVMA to prove the efficacy of the reranking pipeline and ensure data remains up-to-date without infrastructure costs.
 
-* **GitOps Deployment Automation:** A dedicated GitHub Actions workflow (`sync_to_hf.yml`) automatically mirrors the GitHub repository to the Hugging Face production server upon every push, ensuring continuous delivery.
-* **Automated Data Ingestion (CI/CD):** Implemented a scheduled GitHub Actions workflow (`update_kb.yml`) that executes dual ingestion scripts. It parses baseline modding guides and safely navigates Nexus Mods API rate limits to fetch trending mods, embeds the combined data, and upserts it directly to Qdrant Cloud without human intervention.
+* **GitOps Deployment Automation:** A dedicated GitHub Actions workflow (`sync_to_hf.yml`) mirrors a filtered snapshot of the repository to the Hugging Face production server on every push, ensuring continuous delivery without carrying legacy reference assets into the production image.
+* **Automated Data Ingestion (CI/CD):** A scheduled GitHub Actions workflow (`update_kb.yml`) executes dual ingestion scripts. It parses baseline modding guides and safely navigates Nexus Mods API rate limits to fetch trending mods, embeds the combined data, and upserts it directly to Qdrant Cloud without human intervention — ingestion state and artifacts sync to S3 rather than back into the git history, so a routine data refresh never forces a backend redeploy.
+* **S3-Backed Artifact & Telemetry Store:** `chunks.pkl` (the BM25 corpus), Nexus Mods ingestion trackers, and periodic telemetry snapshots are persisted to an S3 bucket. The backend pulls the latest `chunks.pkl` and telemetry history on startup, so both survive a Hugging Face Space restart instead of resetting to whatever was baked into the container image.
 * **Interactive Semantic Visualization (D3.js):** The custom vanilla frontend (deployed on Vercel) features a real-time, force-directed network graph. This maps the mathematical distance between user queries and high-dimensional document chunks, making the vector space visible and interactive.
 * **Asynchronous Telemetry Engine:** A persistent SQLite database silently logs pipeline metrics for every query. Captured data includes candidate pool sizes, selected context chunks, latency metrics, and average rerank scores.
 * **Statistical Performance Profiling:** Utilizes `pandas` and `scikit-learn` to conduct Ordinary Least Squares (OLS) regression on logged telemetry. This isolates vector retrieval overhead from API network constraints, allowing us to mathematically optimize the `k` value in the ensemble retriever based on baseline LLM generation latency.
@@ -56,13 +57,14 @@ Follow these steps to run the complete, decoupled environment on your local mach
 * A Qdrant Cloud cluster (or a local Qdrant instance)
 * A Gemini API Key
 * A Nexus Mods Personal API Key
+* (Optional) An S3 bucket + scoped IAM credentials, for persisting `chunks.pkl` and telemetry across restarts — the app runs fine without this and just falls back to local files
 
 ### 1. Backend Installation & Setup
-Navigate to the backend directory and set up your virtual environment:
+From the **repo root** (not the `backend/` folder — see note below), set up your virtual environment:
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows use: venv\Scripts\activate
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 ### 2. Setting Up API Credentials
 Create a `.env` file in the root directory and setup your API credentials:
@@ -71,14 +73,21 @@ GEMINI_API_KEY=your_gemini_api_key_here
 NEXUS_API_KEY=your_nexus_api_key_here
 QDRANT_URL=your_qdrant_cloud_url_here
 QDRANT_API_KEY=your_qdrant_api_key_here
+
+# Optional -- enables S3-backed persistence for chunks.pkl and telemetry.db
+AWS_ACCESS_KEY_ID=your_iam_access_key_here
+AWS_SECRET_ACCESS_KEY=your_iam_secret_key_here
+AWS_DEFAULT_REGION=your_bucket_region_here
+AWS_S3_BUCKET=your_bucket_name_here
 ```
 
 ### 3. Launching the Backend and Frontend
-We can now launch the backend FastAPI development server. 
-First, navigate to the backend folder and enter:
+We can now launch the backend FastAPI development server, from the **repo root**:
 ```
-uvicorn main:app --reload --port 7860
+uvicorn backend.main:app --reload --port 7860
 ```
+Note: the backend must be run with the repo root as the working directory, since `backend/main.py` imports as `from backend.services import ...`. Running `uvicorn main:app` from inside `backend/` will break these imports.
+
 The documentation and endpoints will be live at http://localhost:7860/docs.
 
 
@@ -86,7 +95,7 @@ Our frontend is built entirely on vanilla modern Javascript and D3.js.
 
 Afterwards, we can launch the frontend by navigating to the frontend folder with any lightweight static server (e.g. Python's built-in server, VS Code's Live Server):
 ```
-cd ../frontend
+cd frontend
 python -m http.server 8000
 ```
 Open your browser and navigate to http://localhost:8000 to interact with the application.
