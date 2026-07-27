@@ -14,13 +14,24 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # required to push full history to new remote
-          lfs: true # downloads the actual LFS files
+          lfs: true # downloads the actual LFS files (e.g. chunks.pkl)
 
-      - name: Fetch ALL historical LFS files
-        run: git lfs fetch --all # forces github to download all historical versions of the lfs files before pushing so hf knows where the reference is coming from
+      # archived/ contains legacy reference files (old app.py, screenshots) that
+      # aren't needed to run the backend, and include PNGs that were never LFS-tracked
+      # -- pushing full history including them gets rejected by HF's binary-file policy.
+      # Pushing a single filtered snapshot instead sidesteps that without rewriting
+      # real git history on origin/master.
+      - name: Build filtered snapshot (excludes archived/)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan hf-deploy
+          git rm -r --cached archived/ > /dev/null 2>&1 || true
+          rm -rf archived/
+          git add -A
+          git commit -m "Sync to Hugging Face Space"
 
       - name: Push to Hugging Face
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: git push --force https://eericzzhao:$HF_TOKEN@huggingface.co/spaces/eericzzhao/fnv-rag-backend master:main
+        run: git push --force https://eericzzhao:$HF_TOKEN@huggingface.co/spaces/eericzzhao/fnv-rag-backend hf-deploy:main
