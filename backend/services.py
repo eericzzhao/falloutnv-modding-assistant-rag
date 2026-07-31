@@ -28,6 +28,7 @@ load_dotenv()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TELEMETRY_DB_PATH = os.path.join(BASE_DIR, "telemetry.db")
 CHUNKS_PATH = "chunks.pkl"
+QDRANT_COLLECTION = "fnvma"
 
 # S3 keys (see s3_utils.py) — bucket/artifact store for chunks.pkl + telemetry backups
 S3_CHUNKS_KEY = "chunks.pkl"
@@ -88,6 +89,30 @@ def log_telemetry(query: str, pool_size: int, context_size: int, avg_score:float
             args=(TELEMETRY_DB_PATH, S3_TELEMETRY_KEY),
             daemon=True
         ).start()
+
+def qdrant_status(timeout: float = 5.0) -> Dict[str, Any]:
+    """Actively probes Qdrant Cloud for the /health endpoint.
+
+    QdrantVectorStore does not connect at construction time, so a dead cluster still
+    produces a fully "booted" engine -- which is exactly how a Qdrant outage looked
+    like a perfectly healthy service while every query returned 500. Uses its own
+    short-timeout client so a hanging cluster stalls health rather than real queries.
+    """
+    status: Dict[str, Any] = {"collection": QDRANT_COLLECTION}
+    try:
+        client = QdrantClient(
+            url=os.environ.get("QDRANT_URL"),
+            api_key=os.environ.get("QDRANT_API_KEY"),
+            timeout=timeout,
+        )
+        info = client.get_collection(QDRANT_COLLECTION)
+        status["reachable"] = True
+        status["points"] = info.points_count
+    except Exception as e:
+        # "no available server" here means the cluster is suspended or mid-upgrade
+        status["reachable"] = False
+        status["error"] = f"{type(e).__name__}: {str(e)[:200]}"
+    return status
 
 def flush_telemetry() -> bool:
     """Uploads telemetry.db to S3 synchronously. Called on graceful shutdown.
@@ -150,7 +175,7 @@ class FalloutRAGEngine:
         self.qdrant_client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
         self.vector_db = QdrantVectorStore(
             client=self.qdrant_client,
-            collection_name="fnvma",
+            collection_name=QDRANT_COLLECTION,
             embedding=self.embeddings
         )
         self.dense_retriever = self.vector_db.as_retriever(search_kwargs={"k": 15})

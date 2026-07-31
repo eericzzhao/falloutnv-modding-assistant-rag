@@ -12,6 +12,7 @@ from backend.services import (
     detect_problematic_mods,
     telemetry_status,
     flush_telemetry,
+    qdrant_status,
 )
 
 #dictionary object to main cross-route global server
@@ -85,10 +86,22 @@ async def health_check():
     applied, rows are being logged, and S3 persistence is on".
     """
     engine_ready = bool(server_state.get("rag_engine"))
+    qdrant = qdrant_status()
+
+    # "ok" has to mean "can actually answer a query". Reporting ok while the vector
+    # store is unreachable is how a total outage went unnoticed by this endpoint.
+    if not engine_ready:
+        status = "initializing"
+    elif not qdrant.get("reachable"):
+        status = "degraded"
+    else:
+        status = "ok"
+
     return {
-        "status": "ok" if engine_ready else "initializing",
+        "status": status,
         "version": APP_VERSION,
         "engine_ready": engine_ready,
+        "qdrant": qdrant,
         "telemetry": telemetry_status(),
     }
 
@@ -102,6 +115,15 @@ async def query_rag_pipeline(request: QueryRequest):
         results = engine.run_query(request.question)
         return results
     except Exception as e:
+        # A dead vector store is an upstream outage, not a bug in this request: say so
+        # with a 503 the frontend can explain, instead of leaking the raw driver error
+        # ("Unexpected Response: 503 ... b'no available server'") into the chat window.
+        if not qdrant_status().get("reachable"):
+            raise HTTPException(
+                status_code=503,
+                detail="The vector database is temporarily unavailable. "
+                       "This is usually brief maintenance -- please try again shortly.",
+            )
         raise HTTPException(status_code=500, detail=f"Pipeline processing error: {str(e)}")
     
 @app.post("/api/v1/analyze-load-order")
