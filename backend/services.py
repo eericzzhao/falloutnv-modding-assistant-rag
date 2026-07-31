@@ -42,13 +42,59 @@ S3_TELEMETRY_KEY = "telemetry/telemetry.db"
 TELEMETRY_SYNC_INTERVAL = int(os.environ.get("TELEMETRY_SYNC_INTERVAL", "1"))
 
 _telemetry_log_count = 0
+# Outcome of the boot-time restore, surfaced by /health. When the restore *errors*
+# (as opposed to finding nothing), uploads are disabled for the life of the process:
+# writing a fresh DB over history we failed to read is how the first telemetry rows
+# were lost, and it is unrecoverable because S3 versioning is not enabled.
+_telemetry_restore = "not_attempted"
+_telemetry_upload_blocked = False
 
 # Dictionary of known horrible, outdated mods (unformatted bc it doesn't matter what's in here)
 KNOWN_BAD_MODS = {"New Vegas Stutter Remover": ["NVSR.esp", "nvse_stutter_remover.dll"], "Project Nevada": ["Project Nevada - Core.esm", "Project Nevada - Cyberware.esp", "Project Nevada - Equipment.esm"], "Zan AutoPurge": ["Zan_AutoPurge_SmartAgro_NV.esp"], "Unlimited Companions": ["UnlimitedCompanions.esp"], "Solid Project": ["SolidProject.esm"]}
 
+def _sqlite_readable(path: str) -> bool:
+    """True when path is a SQLite file we can actually open and read a page from.
+
+    A restored file that boto3 reported as complete can still be unusable (truncated
+    on a previous crash, wrong object at the key). Checked before trusting it, because
+    the alternative is discovering it at first write and clobbering the remote copy.
+    """
+    if not os.path.exists(path):
+        return False
+    try:
+        with sqlite3.connect(path) as conn:
+            conn.execute("PRAGMA schema_version").fetchone()
+        return True
+    except sqlite3.DatabaseError:
+        return False
+
+
 def init_telemetry_db():
+    global _telemetry_restore, _telemetry_upload_blocked
+
     # pull down prior telemetry history (if any) so a redeploy doesn't wipe it
-    s3_utils.download_file(S3_TELEMETRY_KEY, TELEMETRY_DB_PATH)
+    outcome = s3_utils.download_status(S3_TELEMETRY_KEY, TELEMETRY_DB_PATH)
+
+    if outcome == s3_utils.OK and not _sqlite_readable(TELEMETRY_DB_PATH):
+        # Move it aside rather than deleting: it's the only copy of whatever this is,
+        # and CREATE TABLE below needs a usable file at TELEMETRY_DB_PATH.
+        try:
+            os.replace(TELEMETRY_DB_PATH, TELEMETRY_DB_PATH + ".corrupt")
+        except OSError:
+            pass
+        outcome = s3_utils.ERROR
+        print("[telemetry] Restored DB is not readable as SQLite; kept as .corrupt.")
+
+    _telemetry_restore = outcome
+    # Only a genuine failure blocks uploads. MISSING means there is nothing to lose,
+    # and NOT_CONFIGURED means uploads are no-ops anyway -- neither should stop logging.
+    _telemetry_upload_blocked = outcome == s3_utils.ERROR
+    if _telemetry_upload_blocked:
+        print(
+            "[telemetry] Could not restore history from S3; uploads DISABLED for this "
+            "process so the remote copy is not overwritten. Rows are still logged locally."
+        )
+
     with sqlite3.connect(TELEMETRY_DB_PATH) as conn:
         conn.execute("""
             CREATE TABLE IF NOT EXISTS query_logs (
@@ -83,6 +129,8 @@ def log_telemetry(query: str, pool_size: int, context_size: int, avg_score:float
     # periodically back up telemetry.db to S3 in the background so a redeploy
     # doesn't lose history; doesn't block the request thread
     _telemetry_log_count += 1
+    if _telemetry_upload_blocked:
+        return
     if _telemetry_log_count % TELEMETRY_SYNC_INTERVAL == 0:
         threading.Thread(
             target=s3_utils.upload_file,
@@ -122,7 +170,14 @@ def flush_telemetry() -> bool:
     Belt-and-braces only: a sleeping Space may be killed outright rather than shut
     down cleanly, so this cannot be the primary persistence mechanism -- that is the
     per-query upload in log_telemetry.
+
+    Honours the same block as log_telemetry: if the boot-time restore failed, this
+    process's DB is missing history the remote copy still has, and flushing it on
+    shutdown would destroy exactly what the block exists to protect.
     """
+    if _telemetry_upload_blocked:
+        print("[telemetry] Flush skipped: restore failed at boot, remote copy preserved.")
+        return False
     return s3_utils.upload_file(TELEMETRY_DB_PATH, S3_TELEMETRY_KEY)
 
 def telemetry_status() -> Dict[str, Any]:
@@ -135,6 +190,11 @@ def telemetry_status() -> Dict[str, Any]:
     status: Dict[str, Any] = {
         "db_path": TELEMETRY_DB_PATH,
         "s3_configured": s3_utils.is_configured(),
+        # "restore": ok | missing | error | not_configured. "error" plus upload_blocked
+        # means this container is logging locally but deliberately not persisting, which
+        # is otherwise invisible -- row counts keep climbing and nothing looks wrong.
+        "restore": _telemetry_restore,
+        "upload_blocked": _telemetry_upload_blocked,
     }
     try:
         with sqlite3.connect(TELEMETRY_DB_PATH) as conn:
