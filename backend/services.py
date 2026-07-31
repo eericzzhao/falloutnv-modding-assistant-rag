@@ -52,21 +52,25 @@ def init_telemetry_db():
                         context_size INTEGER,
                         avg_rerank_score REAL,
                         latency_ms REAL,
-                        route TEXT DEFAULT 'query'
+                        route TEXT DEFAULT 'query',
+                        llm_ms REAL
                         )
         """)
-        # this runs on every boot against a DB restored from S3, so the migration has
-        # to be conditional -- an unguarded ALTER TABLE would fail the second startup
+        # this runs on every boot against a DB restored from S3, so migrations have to
+        # be conditional -- an unguarded ALTER TABLE would fail the second startup.
+        # llm_ms gets no default on purpose: rows logged before it existed genuinely
+        # have no measurement, and NULL says that honestly where a 0 would lie.
         existing_columns = [row[1] for row in conn.execute("PRAGMA table_info(query_logs)")]
-        if "route" not in existing_columns:
-            conn.execute("ALTER TABLE query_logs ADD COLUMN route TEXT DEFAULT 'query'")
+        for column, ddl in (("route", "TEXT DEFAULT 'query'"), ("llm_ms", "REAL")):
+            if column not in existing_columns:
+                conn.execute(f"ALTER TABLE query_logs ADD COLUMN {column} {ddl}")
 
-def log_telemetry(query: str, pool_size: int, context_size: int, avg_score:float, latency: float, route: str = "query"):
+def log_telemetry(query: str, pool_size: int, context_size: int, avg_score:float, latency: float, route: str = "query", llm_ms: float = None):
     global _telemetry_log_count
     with sqlite3.connect(TELEMETRY_DB_PATH) as conn:
         conn.execute(
-            "INSERT INTO query_logs (query, pool_size, context_size, avg_rerank_score, latency_ms, route) VALUES (?, ?, ?, ?, ?, ?)",
-            (query, pool_size, context_size, avg_score, latency, route)
+            "INSERT INTO query_logs (query, pool_size, context_size, avg_rerank_score, latency_ms, route, llm_ms) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (query, pool_size, context_size, avg_score, latency, route, llm_ms)
         )
 
     # periodically back up telemetry.db to S3 in the background so a redeploy
@@ -161,13 +165,18 @@ class FalloutRAGEngine:
         context_str = "\n\n".join([d["text"] for d in final_context_chunks])
         prompt = f"Context:\n{context_str}\n\nQuestion: {query}\n\nAnswer:"
         
+        # timed separately from the total: retrieval params can't explain latency swings
+        # that happen entirely inside this call, and without its own column the two are
+        # indistinguishable in the telemetry
+        llm_start = time.time()
         response = self.llm.invoke(prompt)
+        llm_ms = (time.time() - llm_start) * 1000
 
         latency_ms = (time.time() - start_time) * 1000
         avg_score = sum(c["rerank_score"] for c in final_context_chunks) / len(final_context_chunks) if final_context_chunks else 0.0
 
         # log to SQLite
-        log_telemetry(query, len(candidate_pool), len(final_context_chunks), avg_score, latency_ms, route)
+        log_telemetry(query, len(candidate_pool), len(final_context_chunks), avg_score, latency_ms, route, llm_ms)
 
         return {
             "answer": response.content,
