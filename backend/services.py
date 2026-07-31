@@ -93,9 +93,11 @@ def log_telemetry(query: str, pool_size: int, context_size: int, avg_score:float
 def qdrant_status(timeout: float = 5.0) -> Dict[str, Any]:
     """Actively probes Qdrant Cloud for the /health endpoint.
 
-    QdrantVectorStore does not connect at construction time, so a dead cluster still
-    produces a fully "booted" engine -- which is exactly how a Qdrant outage looked
-    like a perfectly healthy service while every query returned 500. Uses its own
+    The engine is built once at boot, so a cluster that dies *after* boot leaves
+    engine_ready true while every query 500s -- observed in production. A cluster
+    that is dead *at* boot fails differently and worse: QdrantVectorStore calls
+    _validate_collection_config in __init__, so FalloutRAGEngine raises, lifespan
+    never completes, and the Space exits into RUNTIME_ERROR. Uses its own
     short-timeout client so a hanging cluster stalls health rather than real queries.
     """
     status: Dict[str, Any] = {"collection": QDRANT_COLLECTION}
