@@ -11,6 +11,11 @@ venv/
 __pycache__/
 vnv_chroma_db/
 
+# Telemetry is restored from S3 at boot. Committing it bakes a stale copy into the
+# Docker image, which the app falls back to silently whenever an S3 download fails.
+telemetry.db
+backend/telemetry.db
+
 *.webp
 Claude.md
 *.7z

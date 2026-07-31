@@ -11,6 +11,7 @@ from backend.services import (
     parse_load_order,
     detect_problematic_mods,
     telemetry_status,
+    flush_telemetry,
 )
 
 #dictionary object to main cross-route global server
@@ -39,6 +40,9 @@ async def lifespan(app: FastAPI):
     server_state["rag_engine"] = FalloutRAGEngine()
     yield
     print("clearing active server allocations...")
+    # last chance to persist telemetry before the container's filesystem goes away
+    if flush_telemetry():
+        print("telemetry flushed to S3.")
     server_state.clear()
 
 app = FastAPI(

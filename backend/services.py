@@ -32,7 +32,13 @@ CHUNKS_PATH = "chunks.pkl"
 # S3 keys (see s3_utils.py) — bucket/artifact store for chunks.pkl + telemetry backups
 S3_CHUNKS_KEY = "chunks.pkl"
 S3_TELEMETRY_KEY = "telemetry/telemetry.db"
-TELEMETRY_SYNC_INTERVAL = 20  # upload telemetry.db to S3 every N logged queries
+# Upload telemetry.db to S3 every N logged queries. This defaults to 1 because the
+# counter below is module-level and resets on every process start, while HF Spaces
+# sleep after 30 minutes idle and lose their filesystem -- so at N=20 nothing ever
+# persisted unless 20 queries landed inside a single wake window, which at this
+# traffic volume never happened. Raise it only if the DB grows enough that a
+# per-query upload actually costs something.
+TELEMETRY_SYNC_INTERVAL = int(os.environ.get("TELEMETRY_SYNC_INTERVAL", "1"))
 
 _telemetry_log_count = 0
 
@@ -82,6 +88,15 @@ def log_telemetry(query: str, pool_size: int, context_size: int, avg_score:float
             args=(TELEMETRY_DB_PATH, S3_TELEMETRY_KEY),
             daemon=True
         ).start()
+
+def flush_telemetry() -> bool:
+    """Uploads telemetry.db to S3 synchronously. Called on graceful shutdown.
+
+    Belt-and-braces only: a sleeping Space may be killed outright rather than shut
+    down cleanly, so this cannot be the primary persistence mechanism -- that is the
+    per-query upload in log_telemetry.
+    """
+    return s3_utils.upload_file(TELEMETRY_DB_PATH, S3_TELEMETRY_KEY)
 
 def telemetry_status() -> Dict[str, Any]:
     """Reports what the telemetry DB actually contains, for the /health endpoint.
