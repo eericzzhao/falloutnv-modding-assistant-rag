@@ -37,7 +37,7 @@ TELEMETRY_SYNC_INTERVAL = 20  # upload telemetry.db to S3 every N logged queries
 _telemetry_log_count = 0
 
 # Dictionary of known horrible, outdated mods (unformatted bc it doesn't matter what's in here)
-KNOWN_BAD_MODS = {"New Vegas Stutter Remover": ["NVSR.esp", "nvse_stutter_remover.dll"], "Project Nevada": ["Project Nevada - Core.esm", "Project Nevada - Cyberware.esp", "Project Nevada - Equipment.esm"], "Zan AutoPurge": ["Zan_AutoPurge_SmartAgro_NV.esp"], "Unlimited Companions": ["UnlimitedCompanions.esp"], "Solid Project": ["SolidPorject.esm"]}
+KNOWN_BAD_MODS = {"New Vegas Stutter Remover": ["NVSR.esp", "nvse_stutter_remover.dll"], "Project Nevada": ["Project Nevada - Core.esm", "Project Nevada - Cyberware.esp", "Project Nevada - Equipment.esm"], "Zan AutoPurge": ["Zan_AutoPurge_SmartAgro_NV.esp"], "Unlimited Companions": ["UnlimitedCompanions.esp"], "Solid Project": ["SolidProject.esm"]}
 
 def init_telemetry_db():
     # pull down prior telemetry history (if any) so a redeploy doesn't wipe it
@@ -51,16 +51,22 @@ def init_telemetry_db():
                         pool_size INTEGER,
                         context_size INTEGER,
                         avg_rerank_score REAL,
-                        latency_ms REAL
+                        latency_ms REAL,
+                        route TEXT DEFAULT 'query'
                         )
         """)
+        # this runs on every boot against a DB restored from S3, so the migration has
+        # to be conditional -- an unguarded ALTER TABLE would fail the second startup
+        existing_columns = [row[1] for row in conn.execute("PRAGMA table_info(query_logs)")]
+        if "route" not in existing_columns:
+            conn.execute("ALTER TABLE query_logs ADD COLUMN route TEXT DEFAULT 'query'")
 
-def log_telemetry(query: str, pool_size: int, context_size: int, avg_score:float, latency: float):
+def log_telemetry(query: str, pool_size: int, context_size: int, avg_score:float, latency: float, route: str = "query"):
     global _telemetry_log_count
     with sqlite3.connect(TELEMETRY_DB_PATH) as conn:
         conn.execute(
-            "INSERT INTO query_logs (query, pool_size, context_size, avg_rerank_score, latency_ms) VALUES (?, ?, ?, ?, ?)",
-            (query, pool_size, context_size, avg_score, latency)
+            "INSERT INTO query_logs (query, pool_size, context_size, avg_rerank_score, latency_ms, route) VALUES (?, ?, ?, ?, ?, ?)",
+            (query, pool_size, context_size, avg_score, latency, route)
         )
 
     # periodically back up telemetry.db to S3 in the background so a redeploy
@@ -116,8 +122,12 @@ class FalloutRAGEngine:
         # 5. LLM Setup
         self.llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.3)
 
-    def run_query(self, query: str) -> Dict[str, Any]:
-        """Runs the query through the pipeline, exposing telemetry for D3.js"""
+    def run_query(self, query: str, route: str = "query") -> Dict[str, Any]:
+        """Runs the query through the pipeline, exposing telemetry for D3.js
+
+        `route` tags the telemetry row so analyze_telemetry.py can separate real user
+        questions from the synthetic prompts the load-order endpoint sends through here.
+        """
         start_time = time.time()
 
         # Step A: Get base candidates from Hybrid Retrieval
@@ -157,7 +167,7 @@ class FalloutRAGEngine:
         avg_score = sum(c["rerank_score"] for c in final_context_chunks) / len(final_context_chunks) if final_context_chunks else 0.0
 
         # log to SQLite
-        log_telemetry(query, len(candidate_pool), len(final_context_chunks), avg_score, latency_ms)
+        log_telemetry(query, len(candidate_pool), len(final_context_chunks), avg_score, latency_ms, route)
 
         return {
             "answer": response.content,

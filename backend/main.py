@@ -84,7 +84,8 @@ async def analyze_load_order_file(file: UploadFile = File(...)):
             mods_list_str = ", ".join(bad_mods_found)
             query = f"The user's load order contains the following outdated/broken mods: {mods_list_str}. Briefly explain why each is broken and list the modern alternative."
 
-            rag_result = engine.run_query(query)
+            # tagged so these synthetic prompts don't skew the latency regression
+            rag_result = engine.run_query(query, route="load_order")
             diagnostics.append({
                 "mod_name": "Multiple Issues Detected",
                 "issue_description": rag_result["answer"]

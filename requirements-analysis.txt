@@ -1,0 +1,6 @@
+# Dependencies for analyze_telemetry.py only.
+# Kept out of backend/requirements.txt on purpose: the root Dockerfile copies the
+# script into the production image, and pandas + scikit-learn would add hundreds of
+# megabytes to a container that never runs the analysis.
+pandas
+scikit-learn
