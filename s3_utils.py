@@ -14,6 +14,15 @@ def _client():
     return boto3.client("s3")
 
 
+def is_configured() -> bool:
+    """True when uploads/downloads will actually happen rather than silently no-op.
+
+    Reports the same _BUCKET the transfer functions check, so /health can't claim
+    persistence is on while every call is quietly returning False.
+    """
+    return bool(_BUCKET)
+
+
 def download_file(key: str, local_path: str) -> bool:
     """Downloads s3://<bucket>/<key> to local_path. Returns True on success."""
     if not _BUCKET:

@@ -28,6 +28,9 @@ jobs:
           git checkout --orphan hf-deploy
           git rm -r --cached archived/ > /dev/null 2>&1 || true
           rm -rf archived/
+          # stamp the deployed commit so /api/v1/health reports which code is live;
+          # the orphan snapshot's own SHA is not the master SHA, so it can't be used
+          echo "${{ github.sha }}" > VERSION
           git add -A
           git commit -m "Sync to Hugging Face Space"
 

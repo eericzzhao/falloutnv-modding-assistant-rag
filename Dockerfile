@@ -23,6 +23,8 @@ COPY --chown=user analyze_telemetry.py .
 COPY --chown=user s3_utils.py .
 # copy local chunks.pkl file
 COPY --chown=user chunks.pkl .
+# deployed commit SHA, surfaced by /api/v1/health (written by sync_to_hf.yml)
+COPY --chown=user VERSION .
 
 # expose port 7860 for hugging face spaces
 EXPOSE 7860

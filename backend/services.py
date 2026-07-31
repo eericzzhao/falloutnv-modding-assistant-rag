@@ -83,6 +83,46 @@ def log_telemetry(query: str, pool_size: int, context_size: int, avg_score:float
             daemon=True
         ).start()
 
+def telemetry_status() -> Dict[str, Any]:
+    """Reports what the telemetry DB actually contains, for the /health endpoint.
+
+    Exists because none of this is observable from outside: a Space can serve stale
+    code, skip a migration, or lose every row to an unconfigured S3 bucket while the
+    API keeps returning perfectly good answers.
+    """
+    status: Dict[str, Any] = {
+        "db_path": TELEMETRY_DB_PATH,
+        "s3_configured": s3_utils.is_configured(),
+    }
+    try:
+        with sqlite3.connect(TELEMETRY_DB_PATH) as conn:
+            columns = [row[1] for row in conn.execute("PRAGMA table_info(query_logs)")]
+            status["columns"] = columns
+            if not columns:
+                status["error"] = "query_logs table does not exist"
+                return status
+
+            if "route" in columns:
+                status["rows_by_route"] = {
+                    route: count
+                    for route, count in conn.execute(
+                        "SELECT route, COUNT(*) FROM query_logs GROUP BY route"
+                    )
+                }
+            else:
+                # pre-migration database; report the total rather than pretending
+                total = conn.execute("SELECT COUNT(*) FROM query_logs").fetchone()[0]
+                status["rows_by_route"] = {"(no route column)": total}
+
+            if "llm_ms" in columns:
+                status["llm_ms_populated"] = conn.execute(
+                    "SELECT COUNT(*) FROM query_logs WHERE llm_ms IS NOT NULL"
+                ).fetchone()[0]
+    except Exception as e:
+        # health must answer even when the DB is unreadable -- that IS the finding
+        status["error"] = f"{type(e).__name__}: {e}"
+    return status
+
 class FalloutRAGEngine:
     def __init__(self):
         init_telemetry_db()
