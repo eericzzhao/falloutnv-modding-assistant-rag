@@ -1,11 +1,7 @@
 # Learner Profile
 
 Learning mode: active
-Onboarding: incomplete
-
-Remaining onboarding:
-- Goal / learning focus
-- Preferences (defaults or customize)
+Onboarding: complete
 
 ## Project
 Situation: Existing
@@ -18,7 +14,7 @@ Overall programming: Intermediate (self-reported)
 Stack familiarity: Intermediate overall (self-reported; FastAPI, LangChain/RAG, Qdrant, pytest, D3, GitHub Actions/Docker)
 
 ## Goals
-Primary: Not specified
+Primary: Understand the overall architecture
 Capability goal: Not specified
 
 ## Preferences
