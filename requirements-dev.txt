@@ -1,0 +1,8 @@
+# Test-only dependencies. Install alongside backend/requirements.txt:
+#   pip install -r backend/requirements.txt -r requirements-dev.txt
+pytest>=8
+pytest-cov
+pytest-socket
+httpx          # required by fastapi.testclient.TestClient
+hypothesis
+moto[s3]>=5    # in-memory S3; moto 5 exposes a single mock_aws decorator

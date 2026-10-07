@@ -1,0 +1,35 @@
+name: Tests
+
+on:
+  pull_request:
+  # sync_to_hf.yml calls this as a gate before every deploy, which covers pushes to
+  # master -- a separate push trigger would just run the same suite twice.
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    # No secrets on purpose: the suite is offline by construction (pytest.ini sets
+    # --disable-socket), and a test that starts needing credentials has stopped being
+    # a unit test.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            requirements-dev.txt
+
+      # The full backend install is deliberate. backend/requirements.txt is unpinned and
+      # the HF Space rebuilds from scratch on every push, so this is the only check that
+      # a fresh resolve still imports -- notably that langchain_classic still arrives
+      # transitively via langchain-community, which it is not listed for.
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt -r requirements-dev.txt
+
+      - name: Run tests
+        run: pytest --cov=backend --cov=s3_utils --cov-report=term-missing

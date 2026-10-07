@@ -19,3 +19,6 @@ backend/telemetry.db
 *.webp
 Claude.md
 *.7z
+# pytest-cov output
+.coverage
+htmlcov/
